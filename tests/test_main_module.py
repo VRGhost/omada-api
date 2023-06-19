@@ -26,6 +26,13 @@ def test_omada(test_config, requests_mock):
     return out
 
 
+@pytest.fixture
+def default_api_v2():
+    return yarl.URL(
+        "https://euw1-api-omada-controller.tplinkcloud.com/04b2f7c62fb249ca993a113df25aaa27/api/v2"
+    )
+
+
 def test_config_obj(test_config, test_omada):
     assert test_omada.config == test_config
 
@@ -49,6 +56,20 @@ def test_logout(test_omada, requests_mock):
         "https://euw1-api-omada-controller.tplinkcloud.com/04b2f7c62fb249ca993a113df25aaa27/api/v2/logout?token=mytoken&_=1672531200000",
         text="""{"errorCode":0,"msg":"Success."}""",
     )
-    test_omada.logout()
+    rv = test_omada.logout()
 
     assert test_omada.login_result is None
+    assert rv is True
+
+
+@pytest.mark.freeze_time("2023-01-01")
+def test_current_user(resources_dir, test_omada, default_api_v2, requests_mock):
+    assert test_omada.login_result is not None
+
+    requests_mock.get(
+        str(default_api_v2 / "users" / "current"),
+        text=(resources_dir / "current_user.json").open().read(),
+    )
+    rv = test_omada.get_current_user()
+
+    assert rv.email == "hello@example.com"

@@ -1,0 +1,32 @@
+{
+  "errorCode": 0,
+  "msg": "Success.",
+  "result": {
+    "dbnormal": true,
+    "disaster": 0,
+    "email": "hello@example.com",
+    "forceModify": false,
+    "id": "fb3052c9ade146299afe38adb89e49a7",
+    "name": "hello@example.com",
+    "needFeedback": true,
+    "omadacId": "c34b4ba1ec934471b60ea76d822e72e6",
+    "privilege": {
+      "all": true,
+      "lastSiteCategory": "advanced",
+      "lastVisited": "324af3bf9c4a49e6ae68d2513fc296bd",
+      "sites": [
+        {
+          "name": "Default",
+          "category": "advanced",
+          "key": "324af3bf9c4a49e6ae68d2513fc296bd"
+        }
+      ]
+    },
+    "roleId": "admin_id",
+    "roleName": "Administrator",
+    "root": false,
+    "type": 1,
+    "userLevel": 0,
+    "view": 0
+  }
+}

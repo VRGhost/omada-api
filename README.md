@@ -2,6 +2,9 @@
 
 A simple Python wrapper for the [TP-Link Omada Software Controller](https://www.tp-link.com/us/support/download/omada-software-controller/) API.
 
+[![Tests](docs/badges/tests.svg)](docs/badges/tests.svg)
+[![Coverage](docs/badges/coverage.svg)](docs/badges/coverage.svg)
+
 [![Test Python versions](https://github.com/ghaberek/omada-api/actions/workflows/versions.yml/badge.svg)](https://github.com/ghaberek/omada-api/actions/workflows/versions.yml)
 
 ## Resources

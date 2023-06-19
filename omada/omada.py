@@ -129,6 +129,17 @@ class Omada:
     def api_root(self) -> yarl.URL:
         return self.config.base_url / self.omada_controller_id / "api" / "v2"
 
+    def _default_request_params(self) -> dict:
+        return {"_": timestamp(), "token": self.login_result.token}
+
+    def get_json_response(self, response) -> dict:
+        """Post-processing of a generic omada api request"""
+        response.raise_for_status()
+        json = response.json()
+        if json.get("errorCode") == 0:
+            return json.get("result", None)
+        raise OmadaError(json)
+
     ##
     ## Look up a site key given the name.
     ##
@@ -144,54 +155,16 @@ class Omada:
 
         raise PermissionError(f'current user does not have privilege to site "{name}"')
 
-    ##
-    ## Perform a GET request and return the result.
-    ##
-    def __get(self, path, params={}, data=None, json=None):
+    def __get(self, path):
+        """Perform a GET request and return the result."""
         if self.login_result is None:
             raise ConnectionError("not logged in")
-
-        if not isinstance(params, dict):
-            raise TypeError("params must be a dictionary")
 
         response = self.session.get(
-            self.__buildUrl(path),
-            params=params,
-            data=data,
-            json=json,
+            self.api_root / path,
             headers=self.session.headers,
         )
-        response.raise_for_status()
-
-        json = response.json()
-        if json["errorCode"] == 0:
-            return json["result"] if "result" in json else None
-
-        raise OmadaError(json)
-
-    ##
-    ## Perform a POST request and return the result.
-    ##
-    def __post(self, path, params={}, data=None, json=None):
-        if self.login_result is None:
-            raise ConnectionError("not logged in")
-
-        if not isinstance(params, dict):
-            raise TypeError("params must be a dictionary")
-
-        params["_"] = timestamp()
-        params["token"] = self.login_result.token
-
-        response = self.session.post(
-            self.api_root / path, params=params, data=data, json=json
-        )
-        response.raise_for_status()
-        print(response.text)
-        json = response.json()
-        if json["errorCode"] == 0:
-            return json["result"] if "result" in json else None
-
-        raise OmadaError(json)
+        return self.get_json_response(response)
 
     ##
     ## Perform a PATCH request and return the result.
@@ -322,17 +295,18 @@ class Omada:
 
     def logout(self):
         """Log out of the current session. Return value is always None."""
-        result = None
-
         # Only try to log out if we're already logged in.
         if self.login_result is not None:
             # Send the logout request.
-            result = self.__post("logout")
-            print(repr(result))
+            resp = self.session.post(
+                self.api_root / "logout", params=self._default_request_params()
+            )
+            self.get_json_response(resp)
             # Clear the stored result.
             self.login_result = None
+            return True
 
-        return result
+        return False
 
     ##
     ## Returns the current login status.
@@ -340,11 +314,9 @@ class Omada:
     def getLoginStatus(self):
         return self.__get("/loginStatus")
 
-    ##
-    ## Returns the current user information.
-    ##
-    def getCurrentUser(self):
-        return self.__get("/users/current")
+    def get_current_user(self):
+        """Returns the current user information."""
+        return api_bindings.CurrentUser(**self.__get("users/current"))
 
     ##
     ## Returns the list of groups for the given site.
