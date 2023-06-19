@@ -1,0 +1,24 @@
+ARG BUILD_PYTHON_VERSION=3.8
+
+# pre-build stage -- prepare virtualenv
+FROM python:${BUILD_PYTHON_VERSION} as venv-setup
+
+# Install requirements.txt using hosts' pip auth
+
+ARG AWS_PIP_INDEX_URL
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y \
+        python3-dev git \
+        vim screen && \
+    pip install --upgrade pip poetry packaging
+
+EXPOSE 5000
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV DEBUG=1
+
+COPY ./bin/dev_container ./bin/dev_container
+
+ENTRYPOINT [ "./bin/dev_container/entrypoint.sh" ]

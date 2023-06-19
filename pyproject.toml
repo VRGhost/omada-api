@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "omada-api"
+version = "0.0.0dev0"
+description = "A simple Python wrapper for the TP-Link Omada Software Controller"
+authors = ["Ilja O <vrghost@gmail.com>", "Gregory Haberek <ghaberek@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "omada"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.31.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+pytest = "^7.3.2"
+pytest-cov = "^4.1.0"
+ruff = "^0.0.272"
+pytest-mock = "^3.11.1"
+pytest-local-badge = "^1.0.3"
+
+[tool.ruff]
+target-version = "py38"
+select = [
+    # https://beta.ruff.rs/docs/rules/
+    "A", # do not shadow bultins - TODO
+    "B",  # flake8-bugbear
+    "C",
+    "E",
+    "F",
+    "I",  # isort
+    "W",  # pycodestyle
+    "N",  # pep8 naming
+    "C4", # list comprehensions
+    "T20", # print()
+    "PTH", # use-pathlib - todo
+]
+ignore = ["N802", "F841"]
+line-length = 120
+
+[tool.ruff.isort]
+order-by-type = true
+known-first-party = ["omada", ]
+forced-separate = ["tests"]
+
+[tool.pytest.ini_options]
+addopts = "-v -l --color=yes --cov=omada --cov-report term-missing --no-cov-on-fail --local-badge-output-dir docs/badges/"
+testpaths = [
+    "tests",
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
