@@ -10,6 +10,8 @@ packages = [{include = "omada"}]
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.31.0"
+yarl = "^1.9.2"
+pydantic = "^1.10.9"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -19,6 +21,8 @@ pytest-cov = "^4.1.0"
 ruff = "^0.0.272"
 pytest-mock = "^3.11.1"
 pytest-local-badge = "^1.0.3"
+requests-mock = "^1.11.0"
+pytest-freezegun = "^0.4.2"
 
 [tool.ruff]
 target-version = "py38"
@@ -45,6 +49,11 @@ line-length = 120
     "F401",
     # E402 Module level import not at top of file
     "E402",
+]
+
+"tests/**/*.py" = [
+    # B018 Found useless expression. Either assign it to a variable or remove it.
+    "B018"
 ]
 
 [tool.ruff.isort]

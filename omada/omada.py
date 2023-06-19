@@ -1,35 +1,29 @@
+import dataclasses
+import enum
+import functools
 import http.client
 import logging
-import os
-import warnings
-from configparser import ConfigParser
+import typing
 from datetime import datetime
-from enum import Enum
 
 import requests
 import urllib3
+import yarl
 from requests.cookies import RequestsCookieJar
 
-# define Logger for class-wide usage
+from . import api_bindings
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-ch = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-ch.setFormatter(formatter)
-logger.addHandler(ch)
 
 
-##
-## Omada API calls expect a timestamp in milliseconds.
-##
-def timestamp():
+def timestamp() -> int:
+    """Omada API calls expects timestamp in milliseconds."""
     return int(datetime.utcnow().timestamp() * 1000)
 
 
-##
-## Display errorCode and optional message returned from Omada API.
-##
 class OmadaError(Exception):
+    """Display errorCode and optional message returned from Omada API."""
+
     def __init__(self, json):
         self.errorCode = 0
         self.msg = None
@@ -48,92 +42,70 @@ class OmadaError(Exception):
 
 
 ##
-## The main Omada API class.
+## Group types
 ##
+@enum.unique
+class GroupType(enum.Enum):
+    IPGroup = 0  # "IP Group"
+    IPPortGroup = 1  # "IP-Port Group"
+    MACGroup = 2  # "MAC Group"
+
+
+##
+## Alert and event levels
+##
+@enum.unique
+class LevelFilter(enum.Enum):
+    Error = 0
+    Warning = 1
+    Information = 2
+
+
+##
+## Alert and event modules
+##
+@enum.unique
+class ModuleFilter(enum.Enum):
+    Operation = 0
+    System = 1
+    Device = 2
+    Client = 3
+
+
+@dataclasses.dataclass(frozen=True)
+class OmadaConfig:
+    base_url: yarl.URL
+    site: str
+    omada_controller_id: typing.Optional[str] = None
+    ssl_verify: bool = True
+    warnings: bool = True
+    verbose: bool = False
+
+
 class Omada:
-    ##
-    ## Default API
-    ##
-    ApiPath = "/api/v2"
-
-    ##
-    ## Group types
-    ##
-    class GroupType(Enum):
-        IPGroup = 0  # "IP Group"
-        IPPortGroup = 1  # "IP-Port Group"
-        MACGroup = 2  # "MAC Group"
-
-    ##
-    ## Alert and event levels
-    ##
-    class LevelFilter(Enum):
-        Error = 0
-        Warning = 1
-        Information = 2
-
-    ##
-    ## Alert and event modules
-    ##
-    class ModuleFilter(Enum):
-        Operation = 0
-        System = 1
-        Device = 2
-        Client = 3
+    """The main Omada API class."""
 
     ##
     ## Initialize a new Omada API instance.
     ##
-    def __init__(
-        self,
-        config="omada.cfg",
-        baseurl=None,
-        site="Default",
-        verify=True,
-        warnings=True,
-        verbose=False,
-    ):
-        self.config = None
-        self.loginResult = None
-        self.currentPageSize = 10
-        self.currentUser = {}
-        self.apiPath = Omada.ApiPath
-        self.omadacId = ""
-
-        if baseurl is not None:
-            # use the provided configuration
-            self.baseurl = baseurl
-            self.site = site
-            self.verify = verify
-            self.warnings = warnings
-            self.verbose = verbose
-        elif os.path.isfile(config):
-            # read from configuration file
-            self.config = ConfigParser()
-            try:
-                self.config.read(config)
-                self.baseurl = self.config["omada"].get("baseurl")
-                self.site = self.config["omada"].get("site", "Default")
-                self.verify = self.config["omada"].getboolean("verify", True)
-                self.warnings = self.config["omada"].getboolean("warnings", True)
-                self.verbose = self.config["omada"].getboolean("verbose", False)
-            except:
-                raise
-        else:
-            # could not find configuration
-            raise FileNotFoundError(config)
+    def __init__(self, config: OmadaConfig):
+        self.config = config
+        # self.login_result = None
+        # self.currentUser = {}
+        # self.apiPath = Omada.ApiPath
+        # self.omadacId = ""
 
         # set up requests session and cookies
         self.session = requests.Session()
         self.session.cookies = RequestsCookieJar()
-        self.session.verify = self.verify
+        self.session.verify = self.config.ssl_verify
 
         # hide warnings about insecure SSL requests
-        if self.verify is False and self.warnings is False:
+        if not self.config.ssl_verify and not self.warnings:
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
         # enable verbose output
-        if self.verbose:
+        if self.config.verbose:
             # set debug level in http.client
             http.client.HTTPConnection.debuglevel = 1
             # initialize logger
@@ -143,11 +115,19 @@ class Omada:
             logger.setLevel(logging.DEBUG)
             logger.propagate = True
 
-    ##
-    ## Build a URL for the provided path.
-    ##
-    def __buildUrl(self, path):
-        return self.baseurl + self.omadacId + self.apiPath + path
+    @functools.cached_property
+    def omada_controller_id(self) -> str:
+        if self.config.omada_controller_id:
+            out = self.config.omada_controller_id
+        else:
+            raise NotImplementedError(
+                "TODO: implement fetch from self.baseurl + '/api/info' when talking to the controller locally"
+            )
+        return out
+
+    @property
+    def api_root(self) -> yarl.URL:
+        return self.config.base_url / self.omada_controller_id / "api" / "v2"
 
     ##
     ## Look up a site key given the name.
@@ -168,7 +148,7 @@ class Omada:
     ## Perform a GET request and return the result.
     ##
     def __get(self, path, params={}, data=None, json=None):
-        if self.loginResult is None:
+        if self.login_result is None:
             raise ConnectionError("not logged in")
 
         if not isinstance(params, dict):
@@ -193,20 +173,20 @@ class Omada:
     ## Perform a POST request and return the result.
     ##
     def __post(self, path, params={}, data=None, json=None):
-        if self.loginResult is None:
+        if self.login_result is None:
             raise ConnectionError("not logged in")
 
         if not isinstance(params, dict):
             raise TypeError("params must be a dictionary")
 
         params["_"] = timestamp()
-        params["token"] = self.loginResult["token"]
+        params["token"] = self.login_result.token
 
         response = self.session.post(
-            self.__buildUrl(path), params=params, data=data, json=json
+            self.api_root / path, params=params, data=data, json=json
         )
         response.raise_for_status()
-
+        print(response.text)
         json = response.json()
         if json["errorCode"] == 0:
             return json["result"] if "result" in json else None
@@ -217,14 +197,14 @@ class Omada:
     ## Perform a PATCH request and return the result.
     ##
     def __patch(self, path, params={}, data=None, json=None):
-        if self.loginResult is None:
+        if self.login_result is None:
             raise ConnectionError("not logged in")
 
         if not isinstance(params, dict):
             raise TypeError("params must be a dictionary")
 
         params["_"] = timestamp()
-        params["token"] = self.loginResult["token"]
+        params["token"] = self.login_result["token"]
 
         response = self.session.patch(
             self.__buildUrl(path), params=params, data=data, json=json
@@ -247,20 +227,17 @@ class Omada:
     ## Perform a paged GET request and return the result.
     ##
     def __getPaged(self, path, params={}, data=None, json=None):
-        if self.loginResult is None:
+        if self.login_result is None:
             raise ConnectionError("not logged in")
 
         if not isinstance(params, dict):
             raise TypeError("params must be a dictionary")
 
         params["_"] = timestamp()
-        params["token"] = self.loginResult["token"]
+        params["token"] = self.login_result["token"]
 
-        if "currentPage" not in params:
-            params["currentPage"] = 1
-
-        if "currentPageSize" not in params:
-            params["currentPageSize"] = self.currentPageSize
+        params.setdefault("currentPage", 1)
+        params.setdefault("currentPageSize", 10)
 
         response = self.session.get(
             self.__buildUrl(path), params=params, data=data, json=json
@@ -312,53 +289,17 @@ class Omada:
                 yield item
             result = self.__nextPage(result)
 
-    ##
-    ## Issue a warning if warnings are enabled.
-    ##
-    def __warn(self, message, category=None, stacklevel=1, source=None):
-        if self.warnings:
-            warnings.warn(message, category, stacklevel, source)
+    login_result: api_bindings.LoginResult = None
 
-    ##
-    ## Get OmadacId to prefix request. (Required for version 5.)
-    ##
-    def getApiInfo(self):
-        # This uses a different path, so perform request manually.
-        response = self.session.get(self.baseurl + "/api/info")
-        response.raise_for_status()
-
-        json = response.json()
-        if json["errorCode"] == 0:
-            return json["result"] if "result" in json else None
-
-        raise OmadaError(json)
-
-    ##
-    ## Log in with the provided credentials and return the result.
-    ##
-    def login(self, username=None, password=None):
+    def login(self, username: str, password: str) -> api_bindings.LoginResult:
+        """Log in with the provided credentials and return the result."""
+        assert username, "Username must be provided"
+        assert password, "Password must be provided"
         # Only try to log in if we're not already logged in.
-        if self.loginResult is None:
-            # Fetch the API info from the controller. (Does not require login.)
-            apiInfo = self.getApiInfo()
-
-            # Store the omadacId value. (Required by version 5.)
-            if "omadacId" in apiInfo:
-                self.omadacId = "/" + apiInfo["omadacId"]
-
-            # Get the username and password if not specified.
-            if username is None and password is None:
-                if self.config is None:
-                    raise TypeError("username and password cannot be None")
-                try:
-                    username = self.config["omada"].get("username")
-                    password = self.config["omada"].get("password")
-                except:
-                    raise
-
+        if self.login_result is None:
             # Perform the login request manually.
             response = self.session.post(
-                self.__buildUrl("/login"),
+                self.api_root / "login",
                 json={"username": username, "password": password},
             )
             response.raise_for_status()
@@ -369,28 +310,27 @@ class Omada:
                 raise OmadaError(json)
 
             # Store the login result.
-            self.loginResult = json["result"]
+            self.login_result = api_bindings.LoginResult(**json["result"])
 
             # Store CSRF token header.
-            self.session.headers.update({"Csrf-Token": self.loginResult["token"]})
+            self.session.headers.update({"Csrf-Token": self.login_result.token})
 
             # Get the current user info.
-            self.currentUser = self.getCurrentUser()
+            # self.currentUser = self.getCurrentUser()
 
-        return self.loginResult
+        return self.login_result
 
-    ##
-    ## Log out of the current session. Return value is always None.
-    ##
     def logout(self):
+        """Log out of the current session. Return value is always None."""
         result = None
 
         # Only try to log out if we're already logged in.
-        if self.loginResult is not None:
+        if self.login_result is not None:
             # Send the logout request.
-            result = self.__post("/logout")
+            result = self.__post("logout")
+            print(repr(result))
             # Clear the stored result.
-            self.loginResult = None
+            self.login_result = None
 
         return result
 
