@@ -11,7 +11,8 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y \
         python3-dev git \
-        vim screen && \
+        vim screen \
+        jq && \
     pip install --upgrade pip poetry packaging
 
 EXPOSE 5000

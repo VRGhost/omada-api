@@ -1,13 +1,11 @@
 import dataclasses
 import enum
 import functools
-import http.client
 import logging
 import typing
 from datetime import datetime
 
 import requests
-import urllib3
 import yarl
 from requests.cookies import RequestsCookieJar
 
@@ -21,10 +19,19 @@ def timestamp() -> int:
     return int(datetime.utcnow().timestamp() * 1000)
 
 
+@enum.unique
+class CustomErrorCodes(int, enum.Enum):
+    """This enum contains fake error codes used by this api module"""
+
+    ImpossibleError = -1  # You should never see this error code
+    UnknownSite = 99_001
+    UnknownError = 99_999
+
+
 class OmadaError(Exception):
     """Display errorCode and optional message returned from Omada API."""
 
-    code: int = -1
+    code: int = CustomErrorCodes.ImpossibleError
     msg: str = "<No message>"
 
     def __init__(self, json):
@@ -34,7 +41,7 @@ class OmadaError(Exception):
             error_code = int(json["errorCode"])
         except Exception as err:
             str_errors.append(f"Error extracting error code: {err!r}")
-            error_code = 99_999
+            error_code = CustomErrorCodes.UnknownError
 
         try:
             str_errors.append(json["msg"])
@@ -50,31 +57,19 @@ class OmadaError(Exception):
         return f"Omada error: {self.code=}, {self.msg=}"
 
 
-##
-## Group types
-##
 @enum.unique
-class GroupType(enum.Enum):
-    IPGroup = 0  # "IP Group"
-    IPPortGroup = 1  # "IP-Port Group"
-    MACGroup = 2  # "MAC Group"
+class LevelFilter(enum.Enum):  # ruff: noqa: A003
+    """Alert and event levels"""
 
-
-##
-## Alert and event levels
-##
-@enum.unique
-class LevelFilter(enum.Enum):
     Error = 0
     Warning = 1
     Information = 2
 
 
-##
-## Alert and event modules
-##
 @enum.unique
 class ModuleFilter(enum.Enum):
+    """Alert and event modules"""
+
     Operation = 0
     System = 1
     Device = 2
@@ -87,42 +82,18 @@ class OmadaConfig:
     site: str
     omada_controller_id: typing.Optional[str] = None
     ssl_verify: bool = True
-    warnings: bool = True
-    verbose: bool = False
 
 
 class Omada:
     """The main Omada API class."""
 
-    ##
-    ## Initialize a new Omada API instance.
-    ##
     def __init__(self, config: OmadaConfig):
         self.config = config
-        # self.login_result = None
-        # self.currentUser = {}
-        # self.apiPath = Omada.ApiPath
-        # self.omadacId = ""
 
         # set up requests session and cookies
         self.session = requests.Session()
-        self.session.cookies = RequestsCookieJar()
         self.session.verify = self.config.ssl_verify
-
-        # hide warnings about insecure SSL requests
-        if not self.config.ssl_verify and not self.warnings:
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-        # enable verbose output
-        if self.config.verbose:
-            # set debug level in http.client
-            http.client.HTTPConnection.debuglevel = 1
-            # initialize logger
-            logging.basicConfig()
-            logging.getLogger().setLevel(logging.DEBUG)
-            # configure logging for requests
-            logger.setLevel(logging.DEBUG)
-            logger.propagate = True
+        self.session.cookies = RequestsCookieJar()
 
     @functools.cached_property
     def omada_controller_id(self) -> str:
@@ -134,6 +105,10 @@ class Omada:
             )
         return out
 
+    @functools.cached_property
+    def current_user(self) -> api_bindings.CurrentUser:
+        return self.get_current_user()
+
     @property
     def api_root(self) -> yarl.URL:
         return self.config.base_url / self.omada_controller_id / "api" / "v2"
@@ -143,72 +118,77 @@ class Omada:
 
     def get_json_response(self, response) -> dict:
         """Post-processing of a generic omada api request"""
+        logger.debug(f"Received API response: {response=} {response.text=!r}")
         response.raise_for_status()
-        json = response.json()
+        try:
+            json = response.json()
+        except Exception as err:
+            raise OmadaError(
+                "\n".join(
+                    [
+                        "Unable to parse respone json: {err!r}",
+                        "Response text:",
+                        response.text,
+                    ]
+                )
+            ) from None
         if json.get("errorCode") == 0:
             return json.get("result", None)
         raise OmadaError(json)
 
-    ##
-    ## Look up a site key given the name.
-    ##
-    def __findKey(self, name=None):
+    def _find_site(self, name: typing.Optional[str] = None):
+        """Look up a site key given the name."""
+
         # Use the stored site if not provided.
         if name is None:
-            name = self.site
+            name = self.config.site
 
         # Look for the site in the privilege list.
-        for site in self.currentUser["privilege"]["sites"]:
-            if site["name"] == name:
-                return site["key"]
+        for site in self.current_user.privilege.sites:
+            if site.name == name:
+                return site.key
 
-        raise PermissionError(f'current user does not have privilege to site "{name}"')
+        raise OmadaError(
+            {
+                "errorCode": CustomErrorCodes.UnknownSite,
+                "msg": f'Current user does not have privilege to site "{name}"',
+            }
+        )
 
-    def __get(self, path):
+    def _get(self, path):
         """Perform a GET request and return the result."""
-        if self.login_result is None:
-            raise ConnectionError("not logged in")
 
         response = self.session.get(
             self.api_root / path,
-            headers=self.session.headers,
         )
         return self.get_json_response(response)
 
-    ##
-    ## Perform a PATCH request and return the result.
-    ##
-    def __patch(self, path, params={}, data=None, json=None):
-        if self.login_result is None:
-            raise ConnectionError("not logged in")
+    def _patch(
+        self,
+        path: str,
+        params: typing.Optional[dict] = None,
+        data: typing.Optional[dict] = None,
+        json: typing.Optional[dict] = None,
+    ):
+        """Perform a PATCH request and return the result."""
 
-        if not isinstance(params, dict):
-            raise TypeError("params must be a dictionary")
+        if not params:
+            params = {}
+        params = params.copy()
 
-        params["_"] = timestamp()
-        params["token"] = self.login_result["token"]
+        params.update({"_": timestamp(), "token": self.login_result.token})
 
         response = self.session.patch(
-            self.__buildUrl(path), params=params, data=data, json=json
+            self.api_root / path, params=params, data=data, json=json
         )
-        response.raise_for_status()
+        return self.get_json_response(response)
 
-        json = response.json()
-        if json["errorCode"] == 0:
-            return json["result"] if "result" in json else None
-
-        raise OmadaError(json)
-
-    ##
-    ## Return True if a result contains data.
-    ##
     def __hasData(self, result):
+        """Return True if a result contains data."""
         return (result is not None) and ("data" in result) and (len(result["data"]) > 0)
 
-    ##
-    ## Perform a paged GET request and return the result.
-    ##
-    def __getPaged(self, path, params={}, data=None, json=None):
+    def _getPaged(self, path, params={}, data=None, json=None):
+        """Perform a paged GET request and return the result."""
         if self.login_result is None:
             raise ConnectionError("not logged in")
 
@@ -222,7 +202,7 @@ class Omada:
         params.setdefault("currentPageSize", 10)
 
         response = self.session.get(
-            self.__buildUrl(path), params=params, data=data, json=json
+            self.api_root / path, params=params, data=data, json=json
         )
         response.raise_for_status()
 
@@ -234,10 +214,8 @@ class Omada:
 
         raise OmadaError(json)
 
-    ##
-    ## Returns the next page of data if more is available.
-    ##
     def __nextPage(self, result):
+        """Returns the next page of data if more is available."""
         if "path" in result:
             path = result["path"]
             del result["path"]
@@ -259,19 +237,19 @@ class Omada:
             return None
 
         params["currentPage"] = currentPage + 1
-        return self.__getPaged(path, params)
+        return self._getPaged(path, params)
 
     ##
     ## Perform a GET request and yield the results.
     ##
     def __geterator(self, path, params={}, data=None, json=None):
-        result = self.__getPaged(path, params, data, json)
+        result = self._getPaged(path, params, data, json)
         while self.__hasData(result):
             for item in result["data"]:
                 yield item
             result = self.__nextPage(result)
 
-    login_result: api_bindings.LoginResult = None
+    login_result: typing.Optional[api_bindings.LoginResult] = None
 
     def login(self, username: str, password: str) -> api_bindings.LoginResult:
         """Log in with the provided credentials and return the result."""
@@ -297,9 +275,6 @@ class Omada:
             # Store CSRF token header.
             self.session.headers.update({"Csrf-Token": self.login_result.token})
 
-            # Get the current user info.
-            # self.currentUser = self.getCurrentUser()
-
         return self.login_result
 
     def logout(self):
@@ -317,62 +292,55 @@ class Omada:
 
         return False
 
-    ##
-    ## Returns the current login status.
-    ##
-    def getLoginStatus(self):
-        return self.__get("/loginStatus")
+    def get_login_status(self) -> bool:
+        """Returns the current login status."""
+        return self._get("loginStatus").get("login", False)
 
     def get_current_user(self):
         """Returns the current user information."""
-        return api_bindings.CurrentUser(**self.__get("users/current"))
+        return api_bindings.CurrentUser(**self._get("users/current"))
 
-    ##
-    ## Returns the list of groups for the given site.
-    ##
-    def getSiteGroups(self, site=None, type=None):
-        return self.__get(
-            f"/sites/{self.__findKey(site)}/setting/profiles/groups"
-            + (f"/{type}" if type else "")
-        )
+    def get_site_groups(
+        self, site: typing.Optional[str] = None, type: typing.Optional[str] = None
+    ) -> typing.Sequence[api_bindings.SiteGroup]:
+        """Returns the list of groups for the given site."""
+        site_id = self._find_site(site)
+        str_type = f"/{type}" if type else ""
+        rv = self._get(f"sites/{site_id}/setting/profiles/groups{str_type}")
+        return [api_bindings.SiteGroup(**el) for el in rv.get("data", [])]
 
-    ##
-    ## Returns the list of portal candidates for the given site.
-    ##
-    ## This is the "SSID & Network" list on Settings > Authentication > Portal > Basic Info.
-    ##
-    def getPortalCandidates(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/setting/portal/candidates")
+    def getPortalCandidates(self, site: typing.Optional[str] = None):
+        """Returns the list of portal candidates for the given site.
 
-    ##
-    ## Returns the list of RADIUS profiles for the given site.
-    ##
-    def getRadiusProfiles(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/setting/radiusProfiles")
+        This is the "SSID & Network" list on Settings > Authentication > Portal > Basic Info.
+        """
+        return self._get(f"sites/{self._find_site(site)}/setting/portal/candidates")
 
-    ##
-    ## Returns the list of scenarios.
-    ##
-    def getScenarios(self):
-        return self.__get("/scenarios")
+    def get_radius_profiles(self, site: typing.Optional[str] = None):
+        """Returns the list of RADIUS profiles for the given site."""
+        return self._get(f"sites/{self._find_site(site)}/setting/radiusProfiles")
+
+    def get_scenarios(self):
+        """Returns the list of scenarios."""
+        return self._get("scenarios")
 
     ##
     ## Returns the list of all sites.
     ##
     def getSites(self):
-        return self.__geterator("/sites")
+        return self._geterator("/sites")
 
     ##
     ## Returns the list of devices for given site.
     ##
     def getSiteDevices(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/devices")
+        return self._get(f"/sites/{self.__findKey(site)}/devices")
 
     ##
     ## Returns the list of active clients for given site.
     ##
     def getSiteClients(self, site=None):
-        return self.__geterator(
+        return self._geterator(
             f"/sites/{self.__findKey(site)}/clients", params={"filters.active": "true"}
         )
 
@@ -397,7 +365,7 @@ class Omada:
         if searchKey is not None:
             params["searchKey"] = searchKey
 
-        return self.__geterator(f"/sites/{self.__findKey(site)}/alerts", params=params)
+        return self._geterator(f"/sites/{self.__findKey(site)}/alerts", params=params)
 
     ##
     ## Returns the list of events for given site.
@@ -418,19 +386,19 @@ class Omada:
         if searchKey is not None:
             params["searchKey"] = searchKey
 
-        return self.__geterator(f"/sites/{self.__findKey(site)}/events", params=params)
+        return self._geterator(f"/sites/{self.__findKey(site)}/events", params=params)
 
     ##
     ## Returns the notification settings for given site.
     ##
     def getSiteNotifications(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/notification")
+        return self._get(f"/sites/{self.__findKey(site)}/notification")
 
     ##
     ## Returns the list of settings for the given site.
     ##
     def getSiteSettings(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/setting")
+        return self._get(f"/sites/{self.__findKey(site)}/setting")
 
     ##
     ## Push back the settings for the site.
@@ -442,7 +410,7 @@ class Omada:
     ## Returns the list of timerange profiles for the given site.
     ##
     def getTimeRanges(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/setting/profiles/timeranges")
+        return self._get(f"/sites/{self.__findKey(site)}/setting/profiles/timeranges")
 
     ##
     ## Returns the list of wireless network groups.
@@ -450,7 +418,7 @@ class Omada:
     ## This is the "WLAN Group" list on Settings > Wireless Networks.
     ##
     def getWirelessGroups(self, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/setting/wlans")
+        return self._get(f"/sites/{self.__findKey(site)}/setting/wlans")
 
     ##
     ## Returns the list of wireless networks for the given group.
@@ -458,4 +426,4 @@ class Omada:
     ## This is the main SSID list on Settings > Wireless Networks.
     ##
     def getWirelessNetworks(self, group, site=None):
-        return self.__get(f"/sites/{self.__findKey(site)}/setting/wlans/{group}/ssids")
+        return self._get(f"/sites/{self.__findKey(site)}/setting/wlans/{group}/ssids")

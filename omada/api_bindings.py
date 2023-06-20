@@ -25,3 +25,12 @@ class CurrentUser(pydantic.BaseModel, extra=pydantic.Extra.allow):
     name: str
     email: str
     privilege: UserPrivilege
+
+
+class SiteGroup(pydantic.BaseModel, extra=pydantic.Extra.allow):
+    count: int
+    groupId: str
+    name: str
+    type: int
+
+    buildIn: bool = False

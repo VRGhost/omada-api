@@ -19,6 +19,11 @@
           "name": "Default",
           "category": "advanced",
           "key": "324af3bf9c4a49e6ae68d2513fc296bd"
+        },
+        {
+          "name": "MyTestSite",
+          "category": "advanced",
+          "key": "MyTestSiteKey"
         }
       ]
     },
