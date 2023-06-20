@@ -1,3 +1,4 @@
+# ruff: noqa: N815, A003
 import typing
 
 import pydantic

@@ -40,8 +40,8 @@ def print_event(event):
             while match:
                 tag = str(match.group(1))
                 mac = str(match.group(2))
-                type = "clientNames" if tag == "client" else "deviceNames"
-                name = "[" + event[type][mac] + "]"
+                cl_type = "clientNames" if tag == "client" else "deviceNames"
+                name = "[" + event[cl_type][mac] + "]"
                 event[key] = event[key].replace(match.group(0), name)
                 match = re.search(r"\[([a-z]+):([0-9A-F\-]+)\]", event[key])
 

@@ -24,21 +24,30 @@ def timestamp() -> int:
 class OmadaError(Exception):
     """Display errorCode and optional message returned from Omada API."""
 
+    code: int = -1
+    msg: str = "<No message>"
+
     def __init__(self, json):
-        self.errorCode = 0
-        self.msg = None
+        error_code = -1
+        str_errors = []
+        try:
+            error_code = int(json["errorCode"])
+        except Exception as err:
+            str_errors.append(f"Error extracting error code: {err!r}")
+            error_code = 99_999
 
-        if json is None:
-            raise TypeError("json cannot be None")
+        try:
+            str_errors.append(json["msg"])
+        except Exception as err:
+            str_errors.extend(
+                [f"Error extracting error message: {err!r}", f"Input json: {json!r}"]
+            )
 
-        if "errorCode" in json:
-            self.errorCode = int(json["errorCode"])
-
-        if "msg" in json:
-            self.msg = '"' + json["msg"] + '"'
+        self.code = error_code
+        self.msg = "\n".join(str_errors)
 
     def __str__(self):
-        return f"errorCode={self.errorCode}, msg={self.msg}"
+        return f"Omada error: {self.code=}, {self.msg=}"
 
 
 ##

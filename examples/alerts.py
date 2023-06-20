@@ -40,8 +40,8 @@ def print_alert(alert):
             if match:
                 tag = str(match.group(1))
                 mac = str(match.group(2))
-                type = "clientNames" if tag == "client" else "deviceNames"
-                name = "[" + alert[type][mac] + "]"
+                cl_type = "clientNames" if tag == "client" else "deviceNames"
+                name = "[" + alert[cl_type][mac] + "]"
                 alert[key] = alert[key].replace(match.group(0), name)
 
         elif key == "time":

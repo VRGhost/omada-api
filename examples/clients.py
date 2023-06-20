@@ -66,7 +66,7 @@ def print_header():
     sys.stdout.write("\n")
 
 
-def print_client(client):
+def print_client(client):  # ruff: noqa: C901
     for key in client:
         if key == "active":
             client[key] = format_status(client["active"])

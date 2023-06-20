@@ -1,11 +1,23 @@
 [tool.poetry]
 name = "omada-api"
 version = "0.0.0dev0"
-description = "A simple Python wrapper for the TP-Link Omada Software Controller"
+description = "A simple Python wrapper for the TP-Link Omada Software Controller API"
 authors = ["Ilja O <vrghost@gmail.com>", "Gregory Haberek <ghaberek@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "omada"}]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.7",
+    "Topic :: Software Development :: Libraries",
+]
+keywords = ["tplink", "omada", "wrapper"]
+
+[tool.poetry.urls]
+"Source" = "https://github.com/vrghost/omada-api"
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -49,6 +61,11 @@ line-length = 120
     "F401",
     # E402 Module level import not at top of file
     "E402",
+]
+
+"examples/**/*.py" = [
+    # print()
+    "T201"
 ]
 
 "tests/**/*.py" = [
