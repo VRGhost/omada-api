@@ -182,25 +182,34 @@ class Omada:
         )
         return self.get_json_response(response)
 
-    def _geterator(self, path: str):
+    def _geterator(
+        self, path: str, params: typing.Optional[typing.Dict[str, typing.Any]] = None
+    ):
         """Perform a GET request and yield the results."""
         total_rows = 1  # will be updated by the first get call
         last_row_data = [42]  # will be updated by the first get call
         yielded_rows = 0
 
-        params = {
-            "_": timestamp(),
-            "token": self.login_result.token,
-            "currentPage": 1,
-            "currentPageSize": 10,
-        }
+        if params:
+            active_params = params.copy()
+        else:
+            active_params = {}
+
+        active_params.update(
+            {
+                "_": timestamp(),
+                "token": self.login_result.token,
+                "currentPage": 1,
+                "currentPageSize": 10,
+            }
+        )
         while last_row_data and yielded_rows < total_rows:
-            resp = self._get(path, params)
+            resp = self._get(path, active_params)
             last_row_data = resp.get("data", [])
             yield from last_row_data
             yielded_rows += len(last_row_data)
             total_rows = int(resp["totalRows"])
-            params["currentPage"] += 1
+            active_params["currentPage"] += 1
 
     login_result: typing.Optional[api_bindings.LoginResult] = None
 
@@ -291,12 +300,10 @@ class Omada:
             for el in self._get(f"sites/{self._find_site(site)}/devices")
         ]
 
-    ##
-    ## Returns the list of active clients for given site.
-    ##
-    def getSiteClients(self, site=None):
+    def get_site_clients(self, site: typing.Optional[str] = None):
+        """Returns the list of active clients for given site."""
         return self._geterator(
-            f"/sites/{self.__findKey(site)}/clients", params={"filters.active": "true"}
+            f"sites/{self._find_site(site)}/clients", params={"filters.active": "true"}
         )
 
     ##

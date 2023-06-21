@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 import omada
@@ -15,7 +17,7 @@ def inactive_omada(test_config, requests_mock):
     result = inactive_omada.login("hello", "world")
 
     assert requests_mock.call_count == 1
-    assert result.token == "b7184f03caa34e7a8f786bd8f5295219"
+    assert result.token == "0bf44cdfeb4609a7f0556872775c0e02"
 
 
 def test_logout(active_omada, requests_mock, default_api_v2, default_omada_params):
@@ -35,13 +37,13 @@ def test_current_user(active_omada, requests_mock):
 
     rv = active_omada.get_current_user()
 
-    assert rv.email == "hello@example.com"
+    assert rv.email == "obf-word@objective@cynicism"
     # Check the attribute too
     assert active_omada.current_user == rv
     assert requests_mock.call_count == 2
 
     rv2 = active_omada.get_current_user()
-    assert rv2.email == "hello@example.com"
+    assert rv2.email == "obf-word@objective@cynicism"
     assert requests_mock.call_count == 3
 
 
@@ -49,13 +51,13 @@ def test_current_user_attribute(active_omada, requests_mock):
     assert active_omada.login_result is not None
 
     rv1 = active_omada.current_user
-    assert rv1.email == "hello@example.com"
+    assert rv1.email == "obf-word@objective@cynicism"
     # Check the attribute too
     assert active_omada.current_user == rv1
     assert requests_mock.call_count == 1
 
     rv2 = active_omada.current_user
-    assert rv2.email == "hello@example.com"
+    assert rv2.email == "obf-word@objective@cynicism"
     # Check the attribute too
     assert active_omada.current_user == rv2
     assert requests_mock.call_count == 1
@@ -73,7 +75,7 @@ class TestRequestCalls:
         assert rv == "TEST PASSED."
         assert (
             matcher.last_request.headers["Csrf-Token"]
-            == "b7184f03caa34e7a8f786bd8f5295219"
+            == "0bf44cdfeb4609a7f0556872775c0e02"
         )
 
     def test_patch(
@@ -87,20 +89,20 @@ class TestRequestCalls:
         assert rv == "TEST PASSED."
         assert (
             matcher.last_request.headers["Csrf-Token"]
-            == "b7184f03caa34e7a8f786bd8f5295219"
+            == "0bf44cdfeb4609a7f0556872775c0e02"
         )
 
 
 class TestFindSite:
     def test_default(self, active_omada):
         x = active_omada._find_site()
-        assert x == "324af3bf9c4a49e6ae68d2513fc296bd"
+        assert x == "0bf476c155ea24942722c5a8b516adfe"
 
     @pytest.mark.parametrize(
         "inp, exp_out",
         [
-            ("Default", "324af3bf9c4a49e6ae68d2513fc296bd"),
-            ("MyTestSite", "MyTestSiteKey"),
+            ("obf-word misty tyrant", "0bf476c155ea24942722c5a8b516adfe"),
+            ("obf-word old commenter", "MyTestSiteKey"),
         ],
     )
     def test_explicit_pass(self, active_omada, inp, exp_out):
@@ -125,9 +127,9 @@ def test_login_statis(requests_mock, active_omada):
 @pytest.mark.parametrize(
     "site_name, expected_site_id",
     [
-        (None, "324af3bf9c4a49e6ae68d2513fc296bd"),
-        ("Default", "324af3bf9c4a49e6ae68d2513fc296bd"),
-        ("MyTestSite", "MyTestSiteKey"),
+        (None, "0bf476c155ea24942722c5a8b516adfe"),
+        ("obf-word misty tyrant", "0bf476c155ea24942722c5a8b516adfe"),
+        ("obf-word old commenter", "MyTestSiteKey"),
     ],
 )
 @pytest.mark.parametrize(
@@ -159,28 +161,28 @@ def test_get_default_site_groups(
     assert rv == [
         omada.api_bindings.SiteGroup(
             count=1,
-            groupId="c940f920b66440eabac81a24498b8e2a",
-            name="IPGroup_Any",
+            groupId="0bf4f1e21b27bccf86b22c13a65ca73e",
+            name="obf-word vivacious notification",
             type=0,
             buildIn=False,
-            site="951ecc287ba5437b946ede8d0fb40339",
+            site="0bf45529b28ae3fbfd9c961c383a532c",
             ipList=[{"ip": "0.0.0.0", "mask": 0}],
         ),
         omada.api_bindings.SiteGroup(
             count=1,
             groupId="BI-IPv6Group_Any",
-            name="IPv6Group_Any",
+            name="obf-word average advertising",
             type=3,
             buildIn=True,
             ipv6List=[{"ip": "::", "prefix": 0}],
         ),
         omada.api_bindings.SiteGroup(
             count=1,
-            groupId="b657569c820d43feb46fd0b4c91ba6dd",
-            name="Custom Potato site group",
+            groupId="0bf492e3890eec3fdc3dfd46e4f4c253",
+            name="obf-word bad duchess",
             type=0,
             buildIn=False,
-            site="951ecc287ba5437b946ede8d0fb40339",
+            site="0bf45529b28ae3fbfd9c961c383a532c",
             ipList=[{"ip": "192.168.7.1", "mask": 24}],
         ),
     ]
@@ -196,7 +198,7 @@ def test_get_portal_candidates(
         str(
             default_api_v2
             / "sites"
-            / "324af3bf9c4a49e6ae68d2513fc296bd"
+            / "0bf476c155ea24942722c5a8b516adfe"
             / "setting"
             / "portal"
             / "candidates"
@@ -207,25 +209,29 @@ def test_get_portal_candidates(
     assert rv == omada.api_bindings.PortalCandidates(
         networkList=[
             omada.api_bindings.NamedObject(
-                id="b71fb66cefe04bb8bccdb3dee83f2e24", name="LAN"
+                id="0bf463694d5bd772d67fc7056dd2d52b", name="obf-word applicable fixing"
             )
         ],
         wlanList=[
             omada.api_bindings.WlanList(
-                wlanId="7a83fd1000de4acb8614efa7d5772411",
-                wlanName="Default",
+                wlanId="0bf4cf91fd4e537312645de572441ff9",
+                wlanName="obf-word misty tyrant",
                 ssidList=[
                     omada.api_bindings.NamedObject(
-                        id="bb775c93c4e948a3b52ca70e869d6e5f", name="TEST SSID1"
+                        id="0bf4ac8c4927d7f73f7b467a90702b6c",
+                        name="obf-word terrible university",
                     ),
                     omada.api_bindings.NamedObject(
-                        id="56e0d9f324c24581a4f54bf8a3b8f316", name="TEST SSID2"
+                        id="0bf4550903431138b882276593942dfd",
+                        name="obf-word calm opposition",
                     ),
                     omada.api_bindings.NamedObject(
-                        id="cd72e1c878024a589b63c3a039f33b85", name="TEST SSID3"
+                        id="0bf4540ae01bbb5793cba85b4f0f2a6f",
+                        name="obf-word unfortunate balls",
                     ),
                     omada.api_bindings.NamedObject(
-                        id="913f3956aedd4e78b4cc5a0c5982f037", name="TEST SSID4"
+                        id="0bf4bfdf37630c9ae82908983bdf25d8",
+                        name="obf-word exciting lineup",
                     ),
                 ],
             )
@@ -265,36 +271,60 @@ def test_get_sites(
     rv = list(active_omada.get_sites())
     assert rv == [
         omada.api_bindings.Site(
-            id="d1b689274df0434493b1c566ec5950cc",
-            name="Default",
-            wlanGuestNum=1,
-            wirelessUpgrade=False,
-            type=0,
-            region="United Kingdom",
-            unplaced=False,
-            primary=True,
-            wlanDeviceIsolatedNum=0,
-            wan=True,
-            wlan=True,
-            wlanDeviceConnectedNum=3,
-            wlanUserNum=18,
-            lanDeviceConnectedNum=0,
-            scenario="Office",
+            id="0bf49e3a75cab962401cc44f058ecffa",
+            name="obf-word misty tyrant",
             lan=False,
-            lanDeviceDisconnectedNum=0,
+            type=0,
+            wlanDeviceIsolatedNum=0,
+            wirelessUpgrade=False,
             wiredUpgrade=False,
+            unplaced=False,
+            region="United Kingdom",
+            wlan=True,
+            lanDeviceConnectedNum=0,
+            deviceAccount={
+                "password": "obf-word steep advice",
+                "username": "obf-word@annual@chemotherapy",
+            },
+            primary=True,
+            wlanUserNum=18,
+            scenario="Office",
+            lanUserNum=5,
+            wlanGuestNum=1,
             timeZone="UTC",
             wlanDeviceDisconnectedNum=0,
-            lanUserNum=5,
-            deviceAccount={"password": "user-pass", "username": "user@example.com"},
+            lanDeviceDisconnectedNum=0,
+            wan=True,
+            wlanDeviceConnectedNum=3,
         )
     ]
 
 
 def test_get_site_devices(requests_mock, default_api_v2, resources_dir, active_omada):
     requests_mock.get(
-        str(default_api_v2 / "sites" / "324af3bf9c4a49e6ae68d2513fc296bd" / "devices"),
+        str(default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "devices"),
         text=(resources_dir / "get_site_devices.json").open().read(),
     )
     rv = list(active_omada.get_site_devices())
     assert len(rv) == 4
+
+
+def test_get_site_clients(requests_mock, default_api_v2, resources_dir, active_omada):
+    with (resources_dir / "get_site_clients.json").open() as fin:
+        responses = json.load(fin)
+    # This is a multi-page responmse
+    for idx, response in enumerate(responses):
+        requests_mock.get(
+            str(
+                (
+                    default_api_v2
+                    / "sites"
+                    / "0bf476c155ea24942722c5a8b516adfe"
+                    / "clients"
+                )
+                % {"currentPage": idx + 1}
+            ),
+            text=json.dumps(response),
+        )
+    rv = list(active_omada.get_site_clients())
+    assert len(rv) == 32

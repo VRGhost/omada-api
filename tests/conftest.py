@@ -17,7 +17,7 @@ def test_config():
     return omada.OmadaConfig(
         base_url=yarl.URL(R"https://euw1-api-omada-controller.tplinkcloud.com"),
         omada_controller_id="04b2f7c62fb249ca993a113df25aaa27",
-        site="Default",
+        site="obf-word misty tyrant",
     )
 
 

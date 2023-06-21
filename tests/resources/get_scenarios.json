@@ -2,15 +2,15 @@
     "errorCode": 0,
     "msg": "Success.",
     "result": [
-      "Hotel",
-      "Restaurant",
-      "Shopping Mall",
-      "Airport",
-      "Office",
-      "Factory",
-      "Dormitory",
-      "Campus",
-      "Hospital",
-      "Home"
+        "Hotel",
+        "Restaurant",
+        "Shopping Mall",
+        "Airport",
+        "Office",
+        "Factory",
+        "Dormitory",
+        "Campus",
+        "Hospital",
+        "Home"
     ]
-  }
+}

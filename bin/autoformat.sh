@@ -8,5 +8,5 @@ cd "${PROJECT_ROOT}"
 
 set -x
 
-black ./omada ./tests ./examples
-ruff check --fix ./omada ./tests ./examples
+black ./omada ./tests ./examples ./bin
+ruff check --fix ./omada ./tests ./examples ./bin

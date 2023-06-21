@@ -2,35 +2,35 @@
     "errorCode": 0,
     "msg": "Success.",
     "result": {
-      "networkList": [
-        {
-          "id": "b71fb66cefe04bb8bccdb3dee83f2e24",
-          "name": "LAN"
-        }
-      ],
-      "wlanList": [
-        {
-          "ssidList": [
+        "networkList": [
             {
-              "id": "bb775c93c4e948a3b52ca70e869d6e5f",
-              "name": "TEST SSID1"
-            },
-            {
-              "id": "56e0d9f324c24581a4f54bf8a3b8f316",
-              "name": "TEST SSID2"
-            },
-            {
-              "id": "cd72e1c878024a589b63c3a039f33b85",
-              "name": "TEST SSID3"
-            },
-            {
-              "id": "913f3956aedd4e78b4cc5a0c5982f037",
-              "name": "TEST SSID4"
+                "id": "0bf463694d5bd772d67fc7056dd2d52b",
+                "name": "obf-word applicable fixing"
             }
-          ],
-          "wlanId": "7a83fd1000de4acb8614efa7d5772411",
-          "wlanName": "Default"
-        }
-      ]
+        ],
+        "wlanList": [
+            {
+                "ssidList": [
+                    {
+                        "id": "0bf4ac8c4927d7f73f7b467a90702b6c",
+                        "name": "obf-word terrible university"
+                    },
+                    {
+                        "id": "0bf4550903431138b882276593942dfd",
+                        "name": "obf-word calm opposition"
+                    },
+                    {
+                        "id": "0bf4540ae01bbb5793cba85b4f0f2a6f",
+                        "name": "obf-word unfortunate balls"
+                    },
+                    {
+                        "id": "0bf4bfdf37630c9ae82908983bdf25d8",
+                        "name": "obf-word exciting lineup"
+                    }
+                ],
+                "wlanId": "0bf4cf91fd4e537312645de572441ff9",
+                "wlanName": "obf-word misty tyrant"
+            }
+        ]
     }
-  }
+}
