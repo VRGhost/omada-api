@@ -1,0 +1,38 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+      "currentPage": 1,
+      "currentSize": 2,
+      "data": [
+        {
+          "deviceAccount": {
+            "password": "user-pass",
+            "username": "user@example.com"
+          },
+          "id": "d1b689274df0434493b1c566ec5950cc",
+          "lan": false,
+          "lanDeviceConnectedNum": 0,
+          "lanDeviceDisconnectedNum": 0,
+          "lanUserNum": 5,
+          "name": "Default",
+          "primary": true,
+          "region": "United Kingdom",
+          "scenario": "Office",
+          "timeZone": "UTC",
+          "type": 0,
+          "unplaced": false,
+          "wan": true,
+          "wiredUpgrade": false,
+          "wirelessUpgrade": false,
+          "wlan": true,
+          "wlanDeviceConnectedNum": 3,
+          "wlanDeviceDisconnectedNum": 0,
+          "wlanDeviceIsolatedNum": 0,
+          "wlanGuestNum": 1,
+          "wlanUserNum": 18
+        }
+      ],
+      "totalRows": 1
+    }
+}

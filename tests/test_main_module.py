@@ -156,4 +156,145 @@ def test_get_default_site_groups(
         text=(resources_dir / "get_site_groups.json").open().read(),
     )
     rv = active_omada.get_site_groups(site_name, type_str)
-    # assert rv == 1
+    assert rv == [
+        omada.api_bindings.SiteGroup(
+            count=1,
+            groupId="c940f920b66440eabac81a24498b8e2a",
+            name="IPGroup_Any",
+            type=0,
+            buildIn=False,
+            site="951ecc287ba5437b946ede8d0fb40339",
+            ipList=[{"ip": "0.0.0.0", "mask": 0}],
+        ),
+        omada.api_bindings.SiteGroup(
+            count=1,
+            groupId="BI-IPv6Group_Any",
+            name="IPv6Group_Any",
+            type=3,
+            buildIn=True,
+            ipv6List=[{"ip": "::", "prefix": 0}],
+        ),
+        omada.api_bindings.SiteGroup(
+            count=1,
+            groupId="b657569c820d43feb46fd0b4c91ba6dd",
+            name="Custom Potato site group",
+            type=0,
+            buildIn=False,
+            site="951ecc287ba5437b946ede8d0fb40339",
+            ipList=[{"ip": "192.168.7.1", "mask": 24}],
+        ),
+    ]
+
+
+def test_get_portal_candidates(
+    resources_dir,
+    default_api_v2,
+    requests_mock,
+    active_omada,
+):
+    requests_mock.get(
+        str(
+            default_api_v2
+            / "sites"
+            / "324af3bf9c4a49e6ae68d2513fc296bd"
+            / "setting"
+            / "portal"
+            / "candidates"
+        ),
+        text=(resources_dir / "get_portal_candidates.json").open().read(),
+    )
+    rv = active_omada.get_portal_candidates()
+    assert rv == omada.api_bindings.PortalCandidates(
+        networkList=[
+            omada.api_bindings.NamedObject(
+                id="b71fb66cefe04bb8bccdb3dee83f2e24", name="LAN"
+            )
+        ],
+        wlanList=[
+            omada.api_bindings.WlanList(
+                wlanId="7a83fd1000de4acb8614efa7d5772411",
+                wlanName="Default",
+                ssidList=[
+                    omada.api_bindings.NamedObject(
+                        id="bb775c93c4e948a3b52ca70e869d6e5f", name="TEST SSID1"
+                    ),
+                    omada.api_bindings.NamedObject(
+                        id="56e0d9f324c24581a4f54bf8a3b8f316", name="TEST SSID2"
+                    ),
+                    omada.api_bindings.NamedObject(
+                        id="cd72e1c878024a589b63c3a039f33b85", name="TEST SSID3"
+                    ),
+                    omada.api_bindings.NamedObject(
+                        id="913f3956aedd4e78b4cc5a0c5982f037", name="TEST SSID4"
+                    ),
+                ],
+            )
+        ],
+    )
+
+
+def test_get_scenarios(requests_mock, default_api_v2, resources_dir, active_omada):
+    requests_mock.get(
+        str(default_api_v2 / "scenarios"),
+        text=(resources_dir / "get_scenarios.json").open().read(),
+    )
+    rv = active_omada.get_scenarios()
+    assert rv == [
+        "Hotel",
+        "Restaurant",
+        "Shopping Mall",
+        "Airport",
+        "Office",
+        "Factory",
+        "Dormitory",
+        "Campus",
+        "Hospital",
+        "Home",
+    ]
+
+
+def test_get_sites(
+    requests_mock, default_api_v2, resources_dir, active_omada, default_omada_params
+):
+    params = default_omada_params.copy()
+    params.update({"currentPage": 1, "currentPageSize": 10})
+    requests_mock.get(
+        str((default_api_v2 / "sites") % params),
+        text=(resources_dir / "get_sites.json").open().read(),
+    )
+    rv = list(active_omada.get_sites())
+    assert rv == [
+        omada.api_bindings.Site(
+            id="d1b689274df0434493b1c566ec5950cc",
+            name="Default",
+            wlanGuestNum=1,
+            wirelessUpgrade=False,
+            type=0,
+            region="United Kingdom",
+            unplaced=False,
+            primary=True,
+            wlanDeviceIsolatedNum=0,
+            wan=True,
+            wlan=True,
+            wlanDeviceConnectedNum=3,
+            wlanUserNum=18,
+            lanDeviceConnectedNum=0,
+            scenario="Office",
+            lan=False,
+            lanDeviceDisconnectedNum=0,
+            wiredUpgrade=False,
+            timeZone="UTC",
+            wlanDeviceDisconnectedNum=0,
+            lanUserNum=5,
+            deviceAccount={"password": "user-pass", "username": "user@example.com"},
+        )
+    ]
+
+
+def test_get_site_devices(requests_mock, default_api_v2, resources_dir, active_omada):
+    requests_mock.get(
+        str(default_api_v2 / "sites" / "324af3bf9c4a49e6ae68d2513fc296bd" / "devices"),
+        text=(resources_dir / "get_site_devices.json").open().read(),
+    )
+    rv = list(active_omada.get_site_devices())
+    assert len(rv) == 4

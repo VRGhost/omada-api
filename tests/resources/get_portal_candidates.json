@@ -1,0 +1,36 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+      "networkList": [
+        {
+          "id": "b71fb66cefe04bb8bccdb3dee83f2e24",
+          "name": "LAN"
+        }
+      ],
+      "wlanList": [
+        {
+          "ssidList": [
+            {
+              "id": "bb775c93c4e948a3b52ca70e869d6e5f",
+              "name": "TEST SSID1"
+            },
+            {
+              "id": "56e0d9f324c24581a4f54bf8a3b8f316",
+              "name": "TEST SSID2"
+            },
+            {
+              "id": "cd72e1c878024a589b63c3a039f33b85",
+              "name": "TEST SSID3"
+            },
+            {
+              "id": "913f3956aedd4e78b4cc5a0c5982f037",
+              "name": "TEST SSID4"
+            }
+          ],
+          "wlanId": "7a83fd1000de4acb8614efa7d5772411",
+          "wlanName": "Default"
+        }
+      ]
+    }
+  }

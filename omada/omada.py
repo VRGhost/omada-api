@@ -155,12 +155,11 @@ class Omada:
             }
         )
 
-    def _get(self, path):
+    def _get(self, path, params: typing.Optional[dict] = None):
         """Perform a GET request and return the result."""
-
-        response = self.session.get(
-            self.api_root / path,
-        )
+        if not params:
+            params = {}
+        response = self.session.get(self.api_root / path, params=params)
         return self.get_json_response(response)
 
     def _patch(
@@ -183,71 +182,25 @@ class Omada:
         )
         return self.get_json_response(response)
 
-    def __hasData(self, result):
-        """Return True if a result contains data."""
-        return (result is not None) and ("data" in result) and (len(result["data"]) > 0)
+    def _geterator(self, path: str):
+        """Perform a GET request and yield the results."""
+        total_rows = 1  # will be updated by the first get call
+        last_row_data = [42]  # will be updated by the first get call
+        yielded_rows = 0
 
-    def _getPaged(self, path, params={}, data=None, json=None):
-        """Perform a paged GET request and return the result."""
-        if self.login_result is None:
-            raise ConnectionError("not logged in")
-
-        if not isinstance(params, dict):
-            raise TypeError("params must be a dictionary")
-
-        params["_"] = timestamp()
-        params["token"] = self.login_result["token"]
-
-        params.setdefault("currentPage", 1)
-        params.setdefault("currentPageSize", 10)
-
-        response = self.session.get(
-            self.api_root / path, params=params, data=data, json=json
-        )
-        response.raise_for_status()
-
-        json = response.json()
-        if json["errorCode"] == 0:
-            json["result"]["path"] = path
-            json["result"]["params"] = params
-            return json["result"]
-
-        raise OmadaError(json)
-
-    def __nextPage(self, result):
-        """Returns the next page of data if more is available."""
-        if "path" in result:
-            path = result["path"]
-            del result["path"]
-        else:
-            return None
-
-        if "params" in result:
-            params = result["params"]
-            del result["params"]
-        else:
-            return None
-
-        totalRows = int(result["totalRows"])
-        currentPage = int(result["currentPage"])
-        currentSize = int(result["currentSize"])
-        dataLength = len(result["data"])
-
-        if dataLength + (currentPage - 1) * currentSize >= totalRows:
-            return None
-
-        params["currentPage"] = currentPage + 1
-        return self._getPaged(path, params)
-
-    ##
-    ## Perform a GET request and yield the results.
-    ##
-    def __geterator(self, path, params={}, data=None, json=None):
-        result = self._getPaged(path, params, data, json)
-        while self.__hasData(result):
-            for item in result["data"]:
-                yield item
-            result = self.__nextPage(result)
+        params = {
+            "_": timestamp(),
+            "token": self.login_result.token,
+            "currentPage": 1,
+            "currentPageSize": 10,
+        }
+        while last_row_data and yielded_rows < total_rows:
+            resp = self._get(path, params)
+            last_row_data = resp.get("data", [])
+            yield from last_row_data
+            yielded_rows += len(last_row_data)
+            total_rows = int(resp["totalRows"])
+            params["currentPage"] += 1
 
     login_result: typing.Optional[api_bindings.LoginResult] = None
 
@@ -296,7 +249,7 @@ class Omada:
         """Returns the current login status."""
         return self._get("loginStatus").get("login", False)
 
-    def get_current_user(self):
+    def get_current_user(self) -> api_bindings.CurrentUser:
         """Returns the current user information."""
         return api_bindings.CurrentUser(**self._get("users/current"))
 
@@ -309,32 +262,34 @@ class Omada:
         rv = self._get(f"sites/{site_id}/setting/profiles/groups{str_type}")
         return [api_bindings.SiteGroup(**el) for el in rv.get("data", [])]
 
-    def getPortalCandidates(self, site: typing.Optional[str] = None):
+    def get_portal_candidates(
+        self, site: typing.Optional[str] = None
+    ) -> api_bindings.PortalCandidates:
         """Returns the list of portal candidates for the given site.
 
         This is the "SSID & Network" list on Settings > Authentication > Portal > Basic Info.
         """
-        return self._get(f"sites/{self._find_site(site)}/setting/portal/candidates")
+        return api_bindings.PortalCandidates(
+            **self._get(f"sites/{self._find_site(site)}/setting/portal/candidates")
+        )
 
-    def get_radius_profiles(self, site: typing.Optional[str] = None):
-        """Returns the list of RADIUS profiles for the given site."""
-        return self._get(f"sites/{self._find_site(site)}/setting/radiusProfiles")
-
-    def get_scenarios(self):
+    def get_scenarios(self) -> typing.Iterable[str]:
         """Returns the list of scenarios."""
         return self._get("scenarios")
 
-    ##
-    ## Returns the list of all sites.
-    ##
-    def getSites(self):
-        return self._geterator("/sites")
+    def get_sites(self) -> typing.Generator[api_bindings.Site, None, None]:
+        """Returns the list of all sites."""
+        for el in self._geterator("sites"):
+            yield api_bindings.Site(**el)
 
-    ##
-    ## Returns the list of devices for given site.
-    ##
-    def getSiteDevices(self, site=None):
-        return self._get(f"/sites/{self.__findKey(site)}/devices")
+    def get_site_devices(
+        self, site: typing.Optional[str] = None
+    ) -> typing.Iterable[api_bindings.Device]:
+        """Returns the list of devices for given site."""
+        return [
+            api_bindings.Device(**el)
+            for el in self._get(f"sites/{self._find_site(site)}/devices")
+        ]
 
     ##
     ## Returns the list of active clients for given site.

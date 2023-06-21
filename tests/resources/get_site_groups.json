@@ -1,0 +1,47 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+      "data": [
+        {
+          "count": 1,
+          "groupId": "c940f920b66440eabac81a24498b8e2a",
+          "ipList": [
+            {
+              "ip": "0.0.0.0",
+              "mask": 0
+            }
+          ],
+          "name": "IPGroup_Any",
+          "site": "951ecc287ba5437b946ede8d0fb40339",
+          "type": 0
+        },
+        {
+          "buildIn": true,
+          "count": 1,
+          "groupId": "BI-IPv6Group_Any",
+          "ipv6List": [
+            {
+              "ip": "::",
+              "prefix": 0
+            }
+          ],
+          "name": "IPv6Group_Any",
+          "type": 3
+        },
+        {
+          "count": 1,
+          "groupId": "b657569c820d43feb46fd0b4c91ba6dd",
+          "ipList": [
+            {
+              "ip": "192.168.7.1",
+              "mask": 24
+            }
+          ],
+          "name": "Custom Potato site group",
+          "site": "951ecc287ba5437b946ede8d0fb40339",
+          "type": 0
+        }
+      ]
+    }
+  }
