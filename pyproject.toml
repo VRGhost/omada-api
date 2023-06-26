@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "omada-api"
-version = "0.0.0dev0"
+version = "v0.0.0dev1"
 description = "A simple Python wrapper for the TP-Link Omada Software Controller API"
 authors = ["Ilja O <vrghost@gmail.com>", "Gregory Haberek <ghaberek@gmail.com>"]
 license = "MIT"
