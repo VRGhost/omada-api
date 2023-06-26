@@ -36,10 +36,14 @@ def test_missing_message():
 def test_input_str():
     err = omada.OmadaError("EVERYTHING IS BROKEN")
     assert err.code == 99_999
+    try:
+        "a string"["a key"]
+    except TypeError as type_error:
+        sub_err = type_error
     assert err.msg == "\n".join(
         [
-            "Error extracting error code: TypeError('string indices must be integers')",
-            "Error extracting error message: TypeError('string indices must be integers')",
+            f"Error extracting error code: {sub_err!r}",
+            f"Error extracting error message: {sub_err!r}",
             "Input json: 'EVERYTHING IS BROKEN'",
         ]
     )
