@@ -107,7 +107,7 @@ class Omada:
 
     @functools.cached_property
     def current_user(self) -> api_bindings.CurrentUser:
-        return self.get_current_user()
+        return api_bindings.CurrentUser(**self.get_current_user())
 
     @property
     def api_root(self) -> yarl.URL:
@@ -200,7 +200,7 @@ class Omada:
                 "_": timestamp(),
                 "token": self.login_result.token,
                 "currentPage": 1,
-                "currentPageSize": 10,
+                "currentPageSize": 100,
             }
         )
         while last_row_data and yielded_rows < total_rows:
@@ -258,134 +258,111 @@ class Omada:
         """Returns the current login status."""
         return self._get("loginStatus").get("login", False)
 
-    def get_current_user(self) -> api_bindings.CurrentUser:
+    def get_current_user(self) -> dict:
         """Returns the current user information."""
-        return api_bindings.CurrentUser(**self._get("users/current"))
+        return self._get("users/current")
 
     def get_site_groups(
-        self, site: typing.Optional[str] = None, type: typing.Optional[str] = None
-    ) -> typing.Sequence[api_bindings.SiteGroup]:
+        self,
+        site: typing.Optional[str] = None,
+        type: typing.Optional[str] = None,  # ruff: noqa: A002
+    ) -> typing.Sequence[dict]:
         """Returns the list of groups for the given site."""
         site_id = self._find_site(site)
         str_type = f"/{type}" if type else ""
         rv = self._get(f"sites/{site_id}/setting/profiles/groups{str_type}")
-        return [api_bindings.SiteGroup(**el) for el in rv.get("data", [])]
+        return rv.get("data", [])
 
-    def get_portal_candidates(
-        self, site: typing.Optional[str] = None
-    ) -> api_bindings.PortalCandidates:
+    def get_portal_candidates(self, site: typing.Optional[str] = None) -> dict:
         """Returns the list of portal candidates for the given site.
 
         This is the "SSID & Network" list on Settings > Authentication > Portal > Basic Info.
         """
-        return api_bindings.PortalCandidates(
-            **self._get(f"sites/{self._find_site(site)}/setting/portal/candidates")
-        )
+        return self._get(f"sites/{self._find_site(site)}/setting/portal/candidates")
 
     def get_scenarios(self) -> typing.Iterable[str]:
         """Returns the list of scenarios."""
         return self._get("scenarios")
 
-    def get_sites(self) -> typing.Generator[api_bindings.Site, None, None]:
+    def get_sites(self) -> typing.Generator[dict, None, None]:
         """Returns the list of all sites."""
-        for el in self._geterator("sites"):
-            yield api_bindings.Site(**el)
+        return self._geterator("sites")
 
     def get_site_devices(
         self, site: typing.Optional[str] = None
-    ) -> typing.Iterable[api_bindings.Device]:
+    ) -> typing.Iterable[dict]:
         """Returns the list of devices for given site."""
-        return [
-            api_bindings.Device(**el)
-            for el in self._get(f"sites/{self._find_site(site)}/devices")
-        ]
+        return self._get(f"sites/{self._find_site(site)}/devices")
 
-    def get_site_clients(self, site: typing.Optional[str] = None):
+    def get_site_clients(
+        self, site: typing.Optional[str] = None, active: bool = True
+    ) -> typing.Iterable[dict]:
         """Returns the list of active clients for given site."""
         return self._geterator(
-            f"sites/{self._find_site(site)}/clients", params={"filters.active": "true"}
+            f"sites/{self._find_site(site)}/clients",
+            params={"filters.active": "true" if active else "false"},
         )
 
-    ##
-    ## Returns the list of alerts for given site.
-    ##
-    def getSiteAlerts(
-        self, site=None, archived=False, level=None, module=None, searchKey=None
-    ):
+    def get_site_alerts(
+        self, site: typing.Optional[str] = None, archived: bool = False
+    ) -> typing.Iterable[dict]:
+        """Returns the list of alerts for given site."""
         params = {"filters.archived": "true" if archived else "false"}
 
-        if level is not None:
-            if level not in ValidLevelFilters:
-                raise TypeError("invalid level filter")
-            params["filters.level"] = level
+        return self._geterator(f"sites/{self._find_site(site)}/alerts", params=params)
 
-        if module is not None:
-            if level not in ValidModuleFilters:
-                raise TypeError("invalid module filter")
-            params["filters.module"] = module
+    def get_site_events(
+        self, site: typing.Optional[str] = None
+    ) -> typing.Iterable[dict]:
+        """Returns the list of events for given site."""
+        return self._geterator(f"sites/{self._find_site(site)}/events")
 
-        if searchKey is not None:
-            params["searchKey"] = searchKey
+    def get_site_notifications(
+        self, site: typing.Optional[str] = None
+    ) -> typing.Iterable[dict]:
+        """Returns the notification settings for given site."""
+        return self._get(f"sites/{self._find_site(site)}/notification")
 
-        return self._geterator(f"/sites/{self.__findKey(site)}/alerts", params=params)
+    def get_site_settings(self, site: typing.Optional[str] = None) -> dict:
+        """Returns the list of settings for the given site."""
+        return self._get(f"sites/{self._find_site(site)}/setting")
 
-    ##
-    ## Returns the list of events for given site.
-    ##
-    def getSiteEvents(self, site=None, level=None, module=None, searchKey=None):
-        params = {}
+    def set_site_settings(
+        self, site: typing.Optional[str] = None, settings: dict = None
+    ) -> bool:
+        """Push back the settings for the site.
 
-        if level is not None:
-            if level not in ValidLevelFilters:
-                raise TypeError("invalid level filter")
-            params["filters.level"] = level
+        (Returns `True` on success)
+        """
+        if settings is None:
+            raise NotImplementedError("Please provide settings dict")
+        self._patch(f"sites/{self._find_site(site)}/setting", json=settings)
+        return True
 
-        if module is not None:
-            if module not in ValidModuleFilters:
-                raise TypeError("invalid module filter")
-            params["filters.module"] = module
+    def get_time_ranges(
+        self, site: typing.Optional[str] = None
+    ) -> typing.Iterable[dict]:
+        """Returns the list of timerange profiles for the given site."""
+        return self._get(f"sites/{self._find_site(site)}/setting/profiles/timeranges")[
+            "data"
+        ]
 
-        if searchKey is not None:
-            params["searchKey"] = searchKey
+    def get_wireless_groups(self, site: typing.Optional[str] = None):
+        """Returns the list of wireless network groups.
 
-        return self._geterator(f"/sites/{self.__findKey(site)}/events", params=params)
+        This is the "WLAN Group" list on Settings > Wireless Networks.
+        """
+        return self._get(f"sites/{self._find_site(site)}/setting/wlans")["data"]
 
-    ##
-    ## Returns the notification settings for given site.
-    ##
-    def getSiteNotifications(self, site=None):
-        return self._get(f"/sites/{self.__findKey(site)}/notification")
+    def get_wireless_networks(
+        self, site: typing.Optional[str] = None, group_id: str = None
+    ):
+        """Returns the list of wireless networks for the given group.
 
-    ##
-    ## Returns the list of settings for the given site.
-    ##
-    def getSiteSettings(self, site=None):
-        return self._get(f"/sites/{self.__findKey(site)}/setting")
-
-    ##
-    ## Push back the settings for the site.
-    ##
-    def setSiteSettings(self, settings, site=None):
-        return self.__patch(f"/sites/{self.__findKey(site)}/setting", json=settings)
-
-    ##
-    ## Returns the list of timerange profiles for the given site.
-    ##
-    def getTimeRanges(self, site=None):
-        return self._get(f"/sites/{self.__findKey(site)}/setting/profiles/timeranges")
-
-    ##
-    ## Returns the list of wireless network groups.
-    ##
-    ## This is the "WLAN Group" list on Settings > Wireless Networks.
-    ##
-    def getWirelessGroups(self, site=None):
-        return self._get(f"/sites/{self.__findKey(site)}/setting/wlans")
-
-    ##
-    ## Returns the list of wireless networks for the given group.
-    ##
-    ## This is the main SSID list on Settings > Wireless Networks.
-    ##
-    def getWirelessNetworks(self, group, site=None):
-        return self._get(f"/sites/{self.__findKey(site)}/setting/wlans/{group}/ssids")
+        This is the main SSID list on Settings > Wireless Networks.
+        """
+        if group_id is None:
+            raise NotImplementedError("Please provide group ID")
+        return self._geterator(
+            f"sites/{self._find_site(site)}/setting/wlans/{group_id}/ssids"
+        )

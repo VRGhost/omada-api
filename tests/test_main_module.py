@@ -37,13 +37,13 @@ def test_current_user(active_omada, requests_mock):
 
     rv = active_omada.get_current_user()
 
-    assert rv.email == "obf-word@objective@cynicism"
+    assert rv["email"] == "obf-word@objective@cynicism"
     # Check the attribute too
     assert active_omada.current_user == rv
     assert requests_mock.call_count == 2
 
     rv2 = active_omada.get_current_user()
-    assert rv2.email == "obf-word@objective@cynicism"
+    assert rv2["email"] == "obf-word@objective@cynicism"
     assert requests_mock.call_count == 3
 
 
@@ -159,32 +159,30 @@ def test_get_default_site_groups(
     )
     rv = active_omada.get_site_groups(site_name, type_str)
     assert rv == [
-        omada.api_bindings.SiteGroup(
-            count=1,
-            groupId="0bf4f1e21b27bccf86b22c13a65ca73e",
-            name="obf-word vivacious notification",
-            type=0,
-            buildIn=False,
-            site="0bf45529b28ae3fbfd9c961c383a532c",
-            ipList=[{"ip": "0.0.0.0", "mask": 0}],
-        ),
-        omada.api_bindings.SiteGroup(
-            count=1,
-            groupId="BI-IPv6Group_Any",
-            name="obf-word average advertising",
-            type=3,
-            buildIn=True,
-            ipv6List=[{"ip": "::", "prefix": 0}],
-        ),
-        omada.api_bindings.SiteGroup(
-            count=1,
-            groupId="0bf492e3890eec3fdc3dfd46e4f4c253",
-            name="obf-word bad duchess",
-            type=0,
-            buildIn=False,
-            site="0bf45529b28ae3fbfd9c961c383a532c",
-            ipList=[{"ip": "192.168.7.1", "mask": 24}],
-        ),
+        {
+            "count": 1,
+            "groupId": "0bf4f1e21b27bccf86b22c13a65ca73e",
+            "ipList": [{"ip": "0.0.0.0", "mask": 0}],
+            "name": "obf-word vivacious notification",
+            "site": "0bf45529b28ae3fbfd9c961c383a532c",
+            "type": 0,
+        },
+        {
+            "buildIn": True,
+            "count": 1,
+            "groupId": "BI-IPv6Group_Any",
+            "ipv6List": [{"ip": "::", "prefix": 0}],
+            "name": "obf-word average advertising",
+            "type": 3,
+        },
+        {
+            "count": 1,
+            "groupId": "0bf492e3890eec3fdc3dfd46e4f4c253",
+            "ipList": [{"ip": "192.168.7.1", "mask": 24}],
+            "name": "obf-word bad duchess",
+            "site": "0bf45529b28ae3fbfd9c961c383a532c",
+            "type": 0,
+        },
     ]
 
 
@@ -206,37 +204,38 @@ def test_get_portal_candidates(
         text=(resources_dir / "get_portal_candidates.json").open().read(),
     )
     rv = active_omada.get_portal_candidates()
-    assert rv == omada.api_bindings.PortalCandidates(
-        networkList=[
-            omada.api_bindings.NamedObject(
-                id="0bf463694d5bd772d67fc7056dd2d52b", name="obf-word applicable fixing"
-            )
+    assert rv == {
+        "networkList": [
+            {
+                "id": "0bf463694d5bd772d67fc7056dd2d52b",
+                "name": "obf-word applicable fixing",
+            }
         ],
-        wlanList=[
-            omada.api_bindings.WlanList(
-                wlanId="0bf4cf91fd4e537312645de572441ff9",
-                wlanName="obf-word misty tyrant",
-                ssidList=[
-                    omada.api_bindings.NamedObject(
-                        id="0bf4ac8c4927d7f73f7b467a90702b6c",
-                        name="obf-word terrible university",
-                    ),
-                    omada.api_bindings.NamedObject(
-                        id="0bf4550903431138b882276593942dfd",
-                        name="obf-word calm opposition",
-                    ),
-                    omada.api_bindings.NamedObject(
-                        id="0bf4540ae01bbb5793cba85b4f0f2a6f",
-                        name="obf-word unfortunate balls",
-                    ),
-                    omada.api_bindings.NamedObject(
-                        id="0bf4bfdf37630c9ae82908983bdf25d8",
-                        name="obf-word exciting lineup",
-                    ),
+        "wlanList": [
+            {
+                "ssidList": [
+                    {
+                        "id": "0bf4ac8c4927d7f73f7b467a90702b6c",
+                        "name": "obf-word terrible university",
+                    },
+                    {
+                        "id": "0bf4550903431138b882276593942dfd",
+                        "name": "obf-word calm opposition",
+                    },
+                    {
+                        "id": "0bf4540ae01bbb5793cba85b4f0f2a6f",
+                        "name": "obf-word unfortunate balls",
+                    },
+                    {
+                        "id": "0bf4bfdf37630c9ae82908983bdf25d8",
+                        "name": "obf-word exciting lineup",
+                    },
                 ],
-            )
+                "wlanId": "0bf4cf91fd4e537312645de572441ff9",
+                "wlanName": "obf-word misty tyrant",
+            }
         ],
-    )
+    }
 
 
 def test_get_scenarios(requests_mock, default_api_v2, resources_dir, active_omada):
@@ -263,40 +262,40 @@ def test_get_sites(
     requests_mock, default_api_v2, resources_dir, active_omada, default_omada_params
 ):
     params = default_omada_params.copy()
-    params.update({"currentPage": 1, "currentPageSize": 10})
+    params.update({"currentPage": 1, "currentPageSize": 100})
     requests_mock.get(
         str((default_api_v2 / "sites") % params),
         text=(resources_dir / "get_sites.json").open().read(),
     )
     rv = list(active_omada.get_sites())
     assert rv == [
-        omada.api_bindings.Site(
-            id="0bf49e3a75cab962401cc44f058ecffa",
-            name="obf-word misty tyrant",
-            lan=False,
-            type=0,
-            wlanDeviceIsolatedNum=0,
-            wirelessUpgrade=False,
-            wiredUpgrade=False,
-            unplaced=False,
-            region="United Kingdom",
-            wlan=True,
-            lanDeviceConnectedNum=0,
-            deviceAccount={
+        {
+            "deviceAccount": {
                 "password": "obf-word steep advice",
                 "username": "obf-word@annual@chemotherapy",
             },
-            primary=True,
-            wlanUserNum=18,
-            scenario="Office",
-            lanUserNum=5,
-            wlanGuestNum=1,
-            timeZone="UTC",
-            wlanDeviceDisconnectedNum=0,
-            lanDeviceDisconnectedNum=0,
-            wan=True,
-            wlanDeviceConnectedNum=3,
-        )
+            "id": "0bf49e3a75cab962401cc44f058ecffa",
+            "lan": False,
+            "lanDeviceConnectedNum": 0,
+            "lanDeviceDisconnectedNum": 0,
+            "lanUserNum": 5,
+            "name": "obf-word misty tyrant",
+            "primary": True,
+            "region": "United Kingdom",
+            "scenario": "Office",
+            "timeZone": "UTC",
+            "type": 0,
+            "unplaced": False,
+            "wan": True,
+            "wiredUpgrade": False,
+            "wirelessUpgrade": False,
+            "wlan": True,
+            "wlanDeviceConnectedNum": 3,
+            "wlanDeviceDisconnectedNum": 0,
+            "wlanDeviceIsolatedNum": 0,
+            "wlanGuestNum": 1,
+            "wlanUserNum": 18,
+        }
     ]
 
 
@@ -309,22 +308,226 @@ def test_get_site_devices(requests_mock, default_api_v2, resources_dir, active_o
     assert len(rv) == 4
 
 
-def test_get_site_clients(requests_mock, default_api_v2, resources_dir, active_omada):
-    with (resources_dir / "get_site_clients.json").open() as fin:
+def configure_iter_get(requests_mock, source_file, url):
+    with source_file.open() as fin:
         responses = json.load(fin)
     # This is a multi-page responmse
     for idx, response in enumerate(responses):
         requests_mock.get(
-            str(
-                (
-                    default_api_v2
-                    / "sites"
-                    / "0bf476c155ea24942722c5a8b516adfe"
-                    / "clients"
-                )
-                % {"currentPage": idx + 1}
-            ),
+            str(url % {"currentPage": idx + 1}),
             text=json.dumps(response),
         )
+    return responses
+
+
+def test_get_site_clients(requests_mock, default_api_v2, resources_dir, active_omada):
+    configure_iter_get(
+        requests_mock,
+        resources_dir / "get_site_clients.json",
+        default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "clients",
+    )
+
     rv = list(active_omada.get_site_clients())
     assert len(rv) == 32
+
+
+def test_get_site_alerts(requests_mock, default_api_v2, resources_dir, active_omada):
+    configure_iter_get(
+        requests_mock,
+        resources_dir / "get_site_alerts.json",
+        default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "clients",
+    )
+
+    rv = list(active_omada.get_site_clients())
+    assert len(rv) == 30
+
+
+def test_get_site_events(requests_mock, default_api_v2, resources_dir, active_omada):
+    configure_iter_get(
+        requests_mock,
+        resources_dir / "get_site_events.json",
+        default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "events",
+    )
+
+    rv = list(active_omada.get_site_events())
+    assert len(rv) == 3372
+
+
+def test_get_site_notifications(
+    requests_mock, default_api_v2, resources_dir, active_omada
+):
+    requests_mock.get(
+        str(
+            default_api_v2
+            / "sites"
+            / "0bf476c155ea24942722c5a8b516adfe"
+            / "notification"
+        ),
+        text=(resources_dir / "get_site_notifications.json").open().read(),
+    )
+
+    rv = list(active_omada.get_site_notifications())
+    assert len(rv) == 2
+
+
+def test_get_site_settings(requests_mock, default_api_v2, resources_dir, active_omada):
+    requests_mock.get(
+        str(default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "setting"),
+        text=(resources_dir / "get_site_settings.json").open().read(),
+    )
+
+    rv = active_omada.get_site_settings()
+    assert rv == {
+        "advancedFeature": {"enable": True},
+        "airtimeFairness": {"enable2g": True, "enable5g": True, "enable6g": True},
+        "alert": {"delay": 60, "delayEnable": True, "enable": False},
+        "autoUpgrade": {"enable": False},
+        "bandSteering": {
+            "connectionThreshold": 30,
+            "differenceThreshold": 4,
+            "enable": False,
+            "maxFailures": 5,
+        },
+        "bandSteeringForMultiBand": {"mode": 0},
+        "beaconControl": {
+            "beaconInterval2g": 100,
+            "beaconInterval5g": 100,
+            "beaconInterval6g": 100,
+            "dtimPeriod2g": 1,
+            "dtimPeriod5g": 1,
+            "dtimPeriod6g": 1,
+            "fragmentationThreshold2g": 2346,
+            "fragmentationThreshold5g": 2346,
+            "fragmentationThreshold6g": 2346,
+            "rtsThreshold2g": 2347,
+            "rtsThreshold5g": 2347,
+            "rtsThreshold6g": 2347,
+        },
+        "channelLimit": {"enable": False},
+        "deviceAccount": {
+            "password": "obf-word maximum dugout",
+            "username": "obf-word@dry@counselor",
+        },
+        "led": {"enable": True},
+        "lldp": {"enable": False},
+        "mesh": {
+            "autoFailoverEnable": True,
+            "defGatewayEnable": True,
+            "fullSector": True,
+            "meshEnable": False,
+        },
+        "remoteLog": {"enable": False, "moreClientLog": False, "port": 514},
+        "roaming": {
+            "aiRoamingEnable": True,
+            "dualBand11kReportEnable": False,
+            "fastRoamingEnable": True,
+            "forceDisassociationEnable": True,
+        },
+        "site": {
+            "dst": {
+                "enable": False,
+                "end": {},
+                "endTime": 0,
+                "lastEnd": 0,
+                "lastStart": 0,
+                "nextEnd": 0,
+                "nextStart": 0,
+                "start": {},
+                "startTime": 0,
+                "status": False,
+            },
+            "key": "0bf439c052feea54d4ed841ee52396b0",
+            "mapToken": "pk-eyJ1IjoidHBsaW5rIiwiYSI6ImNsaXXXXXXXXXXXX3eXzY3MyDnQzN2huYnoifQ.hmshbHDzJ_6bDMTMspjs8w",
+            "name": "obf-word misty tyrant",
+            "ntpEnable": False,
+            "ntpServers": [],
+            "omadacId": "0bf4a53bce14114e1d38ede8f999b687",
+            "primary": True,
+            "region": "United Kingdom",
+            "scenario": "Office",
+            "timeZone": "UTC",
+            "type": 0,
+            "unplaced": True,
+            "useGlobalMapToken": True,
+        },
+        "speedTest": {"enable": False, "interval": 120},
+    }
+
+
+def test_set_site_settings(
+    default_omada_params, requests_mock, default_api_v2, active_omada
+):
+    matcher = requests_mock.patch(
+        str(
+            (default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "setting")
+            % default_omada_params
+        ),
+        text="""{"errorCode":0,"msg":"Success."}""",
+    )
+
+    rv = active_omada.set_site_settings(settings={"hello": "world"})
+    assert matcher.last_request.json() == {"hello": "world"}
+    assert rv is True
+
+
+def test_get_time_ranges(requests_mock, default_api_v2, active_omada):
+    requests_mock.get(
+        str(
+            default_api_v2
+            / "sites"
+            / "0bf476c155ea24942722c5a8b516adfe"
+            / "setting"
+            / "profiles"
+            / "timeranges"
+        ),
+        text="""{"errorCode":0,"msg":"Success.","result":{"data":["I have no example here"]}}""",
+    )
+
+    rv = active_omada.get_time_ranges()
+    assert rv == ["I have no example here"]
+
+
+def test_get_wireless_groups(
+    requests_mock, default_api_v2, resources_dir, active_omada
+):
+    requests_mock.get(
+        str(
+            default_api_v2
+            / "sites"
+            / "0bf476c155ea24942722c5a8b516adfe"
+            / "setting"
+            / "wlans"
+        ),
+        text=(resources_dir / "get_settings_wlans.json").open().read(),
+    )
+
+    rv = active_omada.get_wireless_groups()
+    assert rv == [
+        {
+            "clone": False,
+            "id": "0bf411d007bfcb720159226fc8e047a9",
+            "name": "obf-word misty tyrant",
+            "primary": True,
+            "site": "0bf439c052feea54d4ed841ee52396b0",
+        }
+    ]
+
+
+def test_get_wireless_networks(
+    requests_mock, default_api_v2, resources_dir, active_omada
+):
+    requests_mock.get(
+        str(
+            default_api_v2
+            / "sites"
+            / "0bf476c155ea24942722c5a8b516adfe"
+            / "setting"
+            / "wlans"
+            / "HELLO_WORLD"
+            / "ssids"
+        ),
+        text=(resources_dir / "get_wireless_networks.json").open().read(),
+    )
+
+    rv = list(active_omada.get_wireless_networks(group_id="HELLO_WORLD"))
+    assert len(rv) == 4

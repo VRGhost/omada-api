@@ -1,0 +1,106 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "advancedFeature": {
+            "enable": true
+        },
+        "airtimeFairness": {
+            "enable2g": true,
+            "enable5g": true,
+            "enable6g": true
+        },
+        "alert": {
+            "delay": 60,
+            "delayEnable": true,
+            "enable": false
+        },
+        "autoUpgrade": {
+            "enable": false
+        },
+        "bandSteering": {
+            "connectionThreshold": 30,
+            "differenceThreshold": 4,
+            "enable": false,
+            "maxFailures": 5
+        },
+        "bandSteeringForMultiBand": {
+            "mode": 0
+        },
+        "beaconControl": {
+            "beaconInterval2g": 100,
+            "beaconInterval5g": 100,
+            "beaconInterval6g": 100,
+            "dtimPeriod2g": 1,
+            "dtimPeriod5g": 1,
+            "dtimPeriod6g": 1,
+            "fragmentationThreshold2g": 2346,
+            "fragmentationThreshold5g": 2346,
+            "fragmentationThreshold6g": 2346,
+            "rtsThreshold2g": 2347,
+            "rtsThreshold5g": 2347,
+            "rtsThreshold6g": 2347
+        },
+        "channelLimit": {
+            "enable": false
+        },
+        "deviceAccount": {
+            "password": "obf-word maximum dugout",
+            "username": "obf-word@dry@counselor"
+        },
+        "led": {
+            "enable": true
+        },
+        "lldp": {
+            "enable": false
+        },
+        "mesh": {
+            "autoFailoverEnable": true,
+            "defGatewayEnable": true,
+            "fullSector": true,
+            "meshEnable": false
+        },
+        "remoteLog": {
+            "enable": false,
+            "moreClientLog": false,
+            "port": 514
+        },
+        "roaming": {
+            "aiRoamingEnable": true,
+            "dualBand11kReportEnable": false,
+            "fastRoamingEnable": true,
+            "forceDisassociationEnable": true
+        },
+        "site": {
+            "dst": {
+                "enable": false,
+                "end": {},
+                "endTime": 0,
+                "lastEnd": 0,
+                "lastStart": 0,
+                "nextEnd": 0,
+                "nextStart": 0,
+                "start": {},
+                "startTime": 0,
+                "status": false
+            },
+            "key": "0bf439c052feea54d4ed841ee52396b0",
+            "mapToken": "pk-eyJ1IjoidHBsaW5rIiwiYSI6ImNsaXXXXXXXXXXXX3eXzY3MyDnQzN2huYnoifQ.hmshbHDzJ_6bDMTMspjs8w",
+            "name": "obf-word misty tyrant",
+            "ntpEnable": false,
+            "ntpServers": [],
+            "omadacId": "0bf4a53bce14114e1d38ede8f999b687",
+            "primary": true,
+            "region": "United Kingdom",
+            "scenario": "Office",
+            "timeZone": "UTC",
+            "type": 0,
+            "unplaced": true,
+            "useGlobalMapToken": true
+        },
+        "speedTest": {
+            "enable": false,
+            "interval": 120
+        }
+    }
+}

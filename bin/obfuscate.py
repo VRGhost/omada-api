@@ -18,25 +18,26 @@ FAKE_MAC_PREFIX = "0B-F4"
 WORDS = json.load((BIN_DIR / "obfuscate-data.json").open())
 
 
-def hexdigest(input: str):
-    return hashlib.sha1(input.encode("utf8")).hexdigest()
+def hexdigest(input_str: str):
+    return hashlib.sha1(input_str.encode("utf8")).hexdigest()
 
 
-def generate_obfuscated_words(input: str, sep: str = " "):
-    OBF_PREFIX = f"obf-word{sep}"
-    if input.startswith(OBF_PREFIX):
-        return input
+def generate_obfuscated_words(input_str: str, sep: str = " "):
+    OBF_PREFIX = f"obf-word{sep}"  # ruff: noqa: N806
+    if input_str.startswith(OBF_PREFIX):
+        return input_str
     adjectives = WORDS["adjectives"]
     nouns = WORDS["nouns"]
-    hash = hexdigest(input)
-    adj_id = int(hash[::2], 16)
-    noun_id = int(hash[1::2], 16)
+    hash_digest = hexdigest(input_str)
+    adj_id = int(hash_digest[::2], 16)
+    noun_id = int(hash_digest[1::2], 16)
     adjective = adjectives[adj_id % len(adjectives)]
     noun = nouns[noun_id % len(nouns)]
     return f"{OBF_PREFIX}{adjective}{sep}{noun}"
 
 
 def obfuscate_str(name: typing.Optional[str], value: str):
+    str_name = name if name else "UNKNOWN"
     if re.match(r"^[0-9a-f]{12,}$", value, re.I):
         # must be a fake uuid
         if value.startswith(FAKE_UUID_PREFIX):
@@ -47,7 +48,10 @@ def obfuscate_str(name: typing.Optional[str], value: str):
             tail = hexdigest(value)[-(expected_len - len(FAKE_UUID_PREFIX)) :]
             out = f"{FAKE_UUID_PREFIX}{tail}"
             assert len(out) == expected_len
-    elif re.match(r"^([0-9a-f]{2}-?){6}$", value, re.I):
+    elif re.match(r"^([0-9a-f]{2}-?){6}$", value, re.I) or str_name.lower() in {
+        "clientnames",
+        "devicenames",
+    }:
         # MAC
         if value.startswith(FAKE_MAC_PREFIX):
             # already obfuscated
@@ -59,7 +63,14 @@ def obfuscate_str(name: typing.Optional[str], value: str):
         out = generate_obfuscated_words(value, sep="@")
     elif name is None:
         out = value
-    elif name.lower() in ("ssid", "name", "apname", "password", "wlanname"):
+    elif name.lower() in (
+        "ssid",
+        "name",
+        "apname",
+        "password",
+        "wlanname",
+        "securitykey",
+    ):
         out = generate_obfuscated_words(value)
     elif name.lower() in ("hostname"):
         out = generate_obfuscated_words(value, sep="-")
@@ -93,17 +104,16 @@ def obfuscate(data: typing.Union[dict, list]):
 
 def main(file_or_dir: str):
     root = pathlib.Path(file_or_dir)
-    if not root.is_dir:
+    if not root.is_dir():
         files = [root]
     else:
-        assert root.is_dir
+        assert root.is_dir()
         files = list(pathlib.Path(file_or_dir).glob("**/*.json"))
 
     for file in files:
         with file.open() as fin:
             input_data = json.load(fin)
         obfuscated_data = obfuscate(input_data)
-
         with file.open("w") as fout:
             json.dump(obfuscated_data, fout, indent=4, sort_keys=True)
 

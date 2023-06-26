@@ -1,0 +1,895 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "alertEmailSetting": {
+            "alertEmailEnable": false,
+            "delay": 60,
+            "delayEnable": true
+        },
+        "logNotifications": [
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "ADV_FEA_EN",
+                "module": "Operation",
+                "shortMsg": "Advanced Features Enabled",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "MVLAN_CH",
+                "module": "Operation",
+                "shortMsg": "Management VLAN Changed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "VOCH_ADD",
+                "module": "Operation",
+                "shortMsg": "Voucher Created",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "VOCH_DEL",
+                "module": "Operation",
+                "shortMsg": "Voucher Deleted",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "FORM_ADD",
+                "module": "Operation",
+                "shortMsg": "Form Auth Created",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "FORM_DEL",
+                "module": "Operation",
+                "shortMsg": "Form Auth Deleted",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "AP_ROLL_UP",
+                "module": "Operation",
+                "shortMsg": "Rolling Upgrade Triggered",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_ADOPT_OK",
+                "module": "Operation",
+                "shortMsg": "Device Adopted",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "DEV_ADOPT_FL",
+                "module": "Operation",
+                "shortMsg": "Device Adoption Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_ADOPT_BATCH",
+                "module": "Operation",
+                "shortMsg": "Device Adoption in Batch",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_REBOOT",
+                "module": "Operation",
+                "shortMsg": "Device Rebooted",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "DEV_REBOOT_FL",
+                "module": "Operation",
+                "shortMsg": "Device Reboot Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_FORGET_OK",
+                "module": "Operation",
+                "shortMsg": "Device Forgotten",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_FORGET_FL",
+                "module": "Operation",
+                "shortMsg": "Device Forgotten Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_FORGET_BATCH",
+                "module": "Operation",
+                "shortMsg": "Device Forgotten in Batch",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_MOVED_OK",
+                "module": "Operation",
+                "shortMsg": "Device Moved",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "DEV_MOVED_FL",
+                "module": "Operation",
+                "shortMsg": "Device Move Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "WLAN_OPT",
+                "module": "Operation",
+                "shortMsg": "WLAN Group Added/ Deleted",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "SSID_OPT",
+                "module": "Operation",
+                "shortMsg": "Wireless Network Created/Deleted",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_MAN_UP_OK",
+                "module": "Operation",
+                "shortMsg": "Device Upgraded Manually",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "DEV_MAN_UP_FL",
+                "module": "Operation",
+                "shortMsg": "Device Manual Upgrade Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_UP_CANCEL",
+                "module": "Operation",
+                "shortMsg": "Device Upgrade Cancelled",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "C_BLOCK",
+                "module": "Operation",
+                "shortMsg": "Client Blocked",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "C_UNBLOCK",
+                "module": "Operation",
+                "shortMsg": "Client Unblocked",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "REBOOT_SC_OK",
+                "module": "System",
+                "shortMsg": "Reboot Schedule Executed",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "REBOOT_SC_FL",
+                "module": "System",
+                "shortMsg": "Reboot Schedule Execution Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "POE_SC_OK",
+                "module": "System",
+                "shortMsg": "PoE Schedule Executed",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "POE_SC_FL",
+                "module": "System",
+                "shortMsg": "PoE Schedule Execution Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "LOG_MAIL_OK",
+                "module": "System",
+                "shortMsg": "Logs Mailed Automatically",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "LOG_MAIL_FL",
+                "module": "System",
+                "shortMsg": "Automatic Logs Mail Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "LOG_SRV_OK",
+                "module": "System",
+                "shortMsg": "Site Logs Sent to Log Server",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "LOG_SRV_FL",
+                "module": "System",
+                "shortMsg": "Sending Site Logs to Log Server Failed",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "DEV_DISCONN",
+                "module": "Device",
+                "shortMsg": "Device Disconnected",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_CONN",
+                "module": "Device",
+                "shortMsg": "Device Connected",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "AP_ISOLATE",
+                "module": "Device",
+                "shortMsg": "EAP Isolated",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_IP_C",
+                "module": "Device",
+                "shortMsg": "Device IP Changed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "AP_RADAR",
+                "module": "Device",
+                "shortMsg": "EAP Detected Radar",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_UP_OL_OK",
+                "module": "Device",
+                "shortMsg": "Device Upgrade Online",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "DEV_UP_OL_FL",
+                "module": "Device",
+                "shortMsg": "Device Upgrade Online Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "DEV_READOPT_OK",
+                "module": "Device",
+                "shortMsg": "Device Readopted Automatically",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "DEV_READOPT_FL",
+                "module": "Device",
+                "shortMsg": "Automatic Device Readopt Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "AP_CH_C",
+                "module": "Device",
+                "shortMsg": "EAP Channel Changed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_WAN_UP",
+                "module": "Device",
+                "shortMsg": "WAN is up",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSG_WAN_DOWN",
+                "module": "Device",
+                "shortMsg": "WAN is down",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSG_BK_WAN_UP",
+                "module": "Device",
+                "shortMsg": "Backup WAN Takes Effect",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSG_PRI_WAN_UP",
+                "module": "Device",
+                "shortMsg": "Primary WAN Recovered",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSG_ATK",
+                "module": "Device",
+                "shortMsg": "Gateway Detected Attack",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSG_SF_ATK",
+                "module": "Device",
+                "shortMsg": "Gateway Detected Stationary Flood Attack",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSG_ARP_ATK",
+                "module": "Device",
+                "shortMsg": "Gateway Detected ARP Conflicts",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSW_DET_STORM",
+                "module": "Device",
+                "shortMsg": "Switch Detected Storm",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSW_DET_LOOP",
+                "module": "Device",
+                "shortMsg": "Switch Detected Loops",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSW_PB",
+                "module": "Device",
+                "shortMsg": "Switch Port Blocked",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": true,
+                "event": true,
+                "key": "OSW_LOOP_C",
+                "module": "Device",
+                "shortMsg": "Switch Loop Cleared",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_IPSEC_OK",
+                "module": "Device",
+                "shortMsg": "IPsec Connection Established",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSG_IPSEC_FL",
+                "module": "Device",
+                "shortMsg": "IPsec Connection Disconnected",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_C_VPN_OK",
+                "module": "Device",
+                "shortMsg": "PPTP/L2TP Client Connected",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSG_C_VPN_FL",
+                "module": "Device",
+                "shortMsg": "PPTP/L2TP Client Connection Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_RC_VPN_OK",
+                "module": "Device",
+                "shortMsg": "Remote PPTP/L2TP Client Connected",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSG_RC_VPN_FL",
+                "module": "Device",
+                "shortMsg": "Remote PPTP/L2TP Client Connection Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_RC_VPN_LO",
+                "module": "Device",
+                "shortMsg": "Remote PPTP/L2TP Client Logged Out",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_PPPOE_OK",
+                "module": "Device",
+                "shortMsg": "PPPoE Connection Established",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": false,
+                "event": true,
+                "key": "OSG_PPPOE_FL",
+                "module": "Device",
+                "shortMsg": "PPPoE Connection Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSW_TOPO_C",
+                "module": "Device",
+                "shortMsg": "STP Topology Changed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "AP_C_ENT_OK",
+                "module": "Client",
+                "shortMsg": "Client Connected to Enterprise SSID (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "AP_C_FL",
+                "module": "Client",
+                "shortMsg": "Client Connection Failed (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "AP_C_OK",
+                "module": "Client",
+                "shortMsg": "Client Connected (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "W_C_PRT_OK",
+                "module": "Client",
+                "shortMsg": "Client Authenticated with Portal (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "W_C_PRT_FL",
+                "module": "Client",
+                "shortMsg": "Portal Authentication Failed (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "W_C_PRT_EXP",
+                "module": "Client",
+                "shortMsg": "Client Authentication Expired (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "W_C_DISCONN",
+                "module": "Client",
+                "shortMsg": "Client Disconnect (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "W_C_ROAM",
+                "module": "Client",
+                "shortMsg": "Client Roaming (Wireless)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "L_C_CONN",
+                "module": "Client",
+                "shortMsg": "Client Connected (Wired)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "L_C_PTR_OK",
+                "module": "Client",
+                "shortMsg": "Client Authenticated with Portal (Wired)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "L_C_PTR_FL",
+                "module": "Client",
+                "shortMsg": "Portal Authentication Failed (Wired)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "L_C_AUTH_EXP",
+                "module": "Client",
+                "shortMsg": "Client Authenticated Expired (Wired)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "L_C_DISCONN",
+                "module": "Client",
+                "shortMsg": "Client Disconnected (Wired)",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "C_AUTH_OPT",
+                "module": "Client",
+                "shortMsg": "Client Authorized/Unauthorized by Admin",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "C_PRT_EXT",
+                "module": "Client",
+                "shortMsg": "Client Authentication Extended by Admin",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSW_C_1X_OK",
+                "module": "Client",
+                "shortMsg": "Client Authenticated with 802.1X",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSW_C_1X_FL",
+                "module": "Client",
+                "shortMsg": "802.1X Authentication Failed",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "DEV_C_DSYNC",
+                "module": "Device",
+                "shortMsg": "Device Configurations Desynchronized",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "WAN_IP_O_F",
+                "module": "Device",
+                "shortMsg": "WAN IP address Obtaining Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "A_ACTIVE",
+                "module": "License",
+                "shortMsg": "Auto-Activation",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "A_RENEW",
+                "module": "License",
+                "shortMsg": "Auto-Renewal",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "M_ACTIVE",
+                "module": "License",
+                "shortMsg": "Activation",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "UNBIND",
+                "module": "License",
+                "shortMsg": "Unbind",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": false,
+                "key": "A_UNBIND",
+                "module": "License",
+                "shortMsg": "Auto-Unbind",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "REPORT_GENERATION_FAILED",
+                "module": "System",
+                "shortMsg": "Report Generation Failed",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "REPORT_SENDING_FAILED",
+                "module": "System",
+                "shortMsg": "Report Sending Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "REPORT_SCHEDULE_EXECUTED",
+                "module": "System",
+                "shortMsg": "Report Schedule Executed",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "OSG_LARGE_PING_ATTACK",
+                "module": "Device",
+                "shortMsg": "Large Ping Attack",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "SITE_DEVICE_LIST_MAIL_FL",
+                "module": "System",
+                "shortMsg": "Site Device List Schedule Mail Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "SITE_DEVICE_LIST_SCHEDULE_EXECUTED",
+                "module": "System",
+                "shortMsg": "Site Device List Schedule Executed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "OSG_IPSEC_FO",
+                "module": "Device",
+                "shortMsg": "IPsec failover took effect",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "SITE_NETWORK_CHECK_MAIL_FL",
+                "module": "System",
+                "shortMsg": "Site Network check Mail Failed",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "WAN_ONLINE_DETECTION",
+                "module": "Device",
+                "shortMsg": "WAN Online Detection",
+                "webhook": false
+            },
+            {
+                "alert": false,
+                "email": false,
+                "event": true,
+                "key": "WAN_LINK_BACKUP",
+                "module": "Device",
+                "shortMsg": "WAN Link Backup",
+                "webhook": false
+            },
+            {
+                "alert": true,
+                "email": true,
+                "event": true,
+                "key": "INCIDENT_MAILED_FAILED",
+                "module": "System",
+                "shortMsg": "Incidents auto mailed failed",
+                "webhook": false
+            }
+        ]
+    }
+}

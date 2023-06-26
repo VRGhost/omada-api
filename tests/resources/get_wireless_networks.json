@@ -1,0 +1,207 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "currentPage": 1,
+        "currentSize": 10,
+        "data": [
+            {
+                "accessEnable": false,
+                "band": 6,
+                "broadcast": true,
+                "enable11r": true,
+                "guestNetEnable": false,
+                "id": "0bf412c0c2e61bea89d4818378c9cccb",
+                "idInt": 847798444,
+                "index": 1,
+                "macFilterEnable": false,
+                "multiCastSetting": {
+                    "arpCastEnable": false,
+                    "channelUtil": 100,
+                    "filterEnable": false,
+                    "multiCastEnable": true
+                },
+                "name": "obf-word decent serenity",
+                "pmfMode": 2,
+                "portalEnable": false,
+                "pskSetting": {
+                    "encryptionPsk": 3,
+                    "gikRekeyPskEnable": false,
+                    "securityKey": "obf-word jolly twenties",
+                    "versionPsk": 4
+                },
+                "rateAndBeaconCtrl": {
+                    "rate2gCtrlEnable": false,
+                    "rate5gCtrlEnable": false,
+                    "rate6gCtrlEnable": false
+                },
+                "rateLimit": {
+                    "downLimit": 100,
+                    "downLimitEnable": true,
+                    "downLimitType": 1,
+                    "upLimit": 100,
+                    "upLimitEnable": true,
+                    "upLimitType": 1
+                },
+                "security": 3,
+                "site": "0bf439c052feea54d4ed841ee52396b0",
+                "ssidRateLimit": {
+                    "downLimitEnable": false,
+                    "upLimitEnable": false
+                },
+                "vlanEnable": false,
+                "wlanId": "0bf411d007bfcb720159226fc8e047a9",
+                "wlanScheduleEnable": false
+            },
+            {
+                "accessEnable": false,
+                "band": 6,
+                "broadcast": true,
+                "enable11r": true,
+                "guestNetEnable": true,
+                "id": "0bf46a46808a1ac80eed47fa2cb11c89",
+                "idInt": 1386945712,
+                "index": 2,
+                "macFilterEnable": false,
+                "multiCastSetting": {
+                    "arpCastEnable": false,
+                    "channelUtil": 100,
+                    "filterEnable": false,
+                    "multiCastEnable": true
+                },
+                "name": "obf-word personal scrimmage",
+                "pmfMode": 2,
+                "portalEnable": false,
+                "pskSetting": {
+                    "encryptionPsk": 3,
+                    "gikRekeyPskEnable": false,
+                    "securityKey": "obf-word horrible verification",
+                    "versionPsk": 4
+                },
+                "rateAndBeaconCtrl": {
+                    "rate2gCtrlEnable": false,
+                    "rate5gCtrlEnable": false,
+                    "rate6gCtrlEnable": false
+                },
+                "rateLimit": {
+                    "downLimit": 25,
+                    "downLimitEnable": true,
+                    "downLimitType": 1,
+                    "upLimit": 25,
+                    "upLimitEnable": true,
+                    "upLimitType": 1
+                },
+                "security": 3,
+                "site": "0bf439c052feea54d4ed841ee52396b0",
+                "ssidRateLimit": {
+                    "downLimitEnable": false,
+                    "upLimitEnable": false
+                },
+                "vlanEnable": false,
+                "wlanId": "0bf411d007bfcb720159226fc8e047a9",
+                "wlanScheduleEnable": false
+            },
+            {
+                "accessEnable": false,
+                "band": 1,
+                "broadcast": true,
+                "enable11r": false,
+                "guestNetEnable": false,
+                "id": "0bf4cceccf74d536d6f05eab762c69eb",
+                "idInt": 1289502764,
+                "index": 3,
+                "macFilterEnable": false,
+                "multiCastSetting": {
+                    "arpCastEnable": false,
+                    "channelUtil": 100,
+                    "filterEnable": false,
+                    "multiCastEnable": true
+                },
+                "name": "obf-word strong threshold",
+                "pmfMode": 2,
+                "portalEnable": false,
+                "pskSetting": {
+                    "encryptionPsk": 3,
+                    "gikRekeyPskEnable": false,
+                    "securityKey": "obf-word jolly twenties",
+                    "versionPsk": 4
+                },
+                "rateAndBeaconCtrl": {
+                    "rate2gCtrlEnable": false,
+                    "rate5gCtrlEnable": false,
+                    "rate6gCtrlEnable": false
+                },
+                "rateLimit": {
+                    "downLimit": 50,
+                    "downLimitEnable": true,
+                    "downLimitType": 1,
+                    "upLimit": 50,
+                    "upLimitEnable": true,
+                    "upLimitType": 1
+                },
+                "security": 3,
+                "site": "0bf439c052feea54d4ed841ee52396b0",
+                "ssidRateLimit": {
+                    "downLimitEnable": false,
+                    "upLimitEnable": false
+                },
+                "vlanEnable": false,
+                "wlanId": "0bf411d007bfcb720159226fc8e047a9",
+                "wlanScheduleEnable": false
+            },
+            {
+                "accessEnable": false,
+                "band": 1,
+                "broadcast": true,
+                "enable11r": false,
+                "guestNetEnable": true,
+                "id": "0bf49054d08ec1c09665b27b2478ccd6",
+                "idInt": 1599803404,
+                "index": 4,
+                "macFilterEnable": false,
+                "multiCastSetting": {
+                    "arpCastEnable": false,
+                    "channelUtil": 100,
+                    "filterEnable": false,
+                    "multiCastEnable": true
+                },
+                "name": "obf-word spare system",
+                "pmfMode": 2,
+                "portalEnable": false,
+                "pskSetting": {
+                    "encryptionPsk": 3,
+                    "gikRekeyPskEnable": false,
+                    "securityKey": "obf-word horrible verification",
+                    "versionPsk": 4
+                },
+                "rateAndBeaconCtrl": {
+                    "rate2gCtrlEnable": false,
+                    "rate5gCtrlEnable": false,
+                    "rate6gCtrlEnable": false
+                },
+                "rateLimit": {
+                    "downLimit": 50,
+                    "downLimitEnable": true,
+                    "downLimitType": 1,
+                    "upLimit": 50,
+                    "upLimitEnable": true,
+                    "upLimitType": 1
+                },
+                "security": 3,
+                "site": "0bf439c052feea54d4ed841ee52396b0",
+                "ssidRateLimit": {
+                    "downLimitEnable": false,
+                    "upLimitEnable": false
+                },
+                "vlanEnable": false,
+                "wlanId": "0bf411d007bfcb720159226fc8e047a9",
+                "wlanScheduleEnable": false
+            }
+        ],
+        "ssidNum2g": 2,
+        "ssidNum5g": 2,
+        "ssidNum6g": 2,
+        "ssidNumMlo": 0,
+        "totalRows": 4
+    }
+}

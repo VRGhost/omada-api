@@ -1,0 +1,19 @@
+{
+    "errorCode": 0,
+    "msg": "Success.",
+    "result": {
+        "data": [
+            {
+                "clone": false,
+                "id": "0bf411d007bfcb720159226fc8e047a9",
+                "name": "obf-word misty tyrant",
+                "primary": true,
+                "site": "0bf439c052feea54d4ed841ee52396b0"
+            }
+        ],
+        "maxSsids2G": 8,
+        "maxSsids5G": 8,
+        "maxSsids6G": 8,
+        "maxSsidsMlo": 8
+    }
+}
