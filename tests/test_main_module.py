@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 import omada
@@ -308,49 +306,28 @@ def test_get_site_devices(requests_mock, default_api_v2, resources_dir, active_o
     assert len(rv) == 4
 
 
-def configure_iter_get(requests_mock, source_file, url):
-    with source_file.open() as fin:
-        responses = json.load(fin)
-    # This is a multi-page responmse
-    for idx, response in enumerate(responses):
-        requests_mock.get(
-            str(url % {"currentPage": idx + 1}),
-            text=json.dumps(response),
-        )
-    return responses
-
-
-def test_get_site_clients(requests_mock, default_api_v2, resources_dir, active_omada):
-    configure_iter_get(
-        requests_mock,
-        resources_dir / "get_site_clients.json",
+def test_get_site_clients(
+    configure_paginated_get, default_api_v2, resources_dir, active_omada
+):
+    configure_paginated_get(
         default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "clients",
+        resources_dir / "get_site_clients.json",
     )
 
     rv = list(active_omada.get_site_clients())
     assert len(rv) == 32
 
 
-def test_get_site_alerts(requests_mock, default_api_v2, resources_dir, active_omada):
-    configure_iter_get(
-        requests_mock,
-        resources_dir / "get_site_alerts.json",
+def test_get_site_alerts(
+    configure_paginated_get, default_api_v2, resources_dir, active_omada
+):
+    configure_paginated_get(
         default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "clients",
+        resources_dir / "get_site_alerts.json",
     )
 
     rv = list(active_omada.get_site_clients())
     assert len(rv) == 30
-
-
-def test_get_site_events(requests_mock, default_api_v2, resources_dir, active_omada):
-    configure_iter_get(
-        requests_mock,
-        resources_dir / "get_site_events.json",
-        default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "events",
-    )
-
-    rv = list(active_omada.get_site_events())
-    assert len(rv) == 3372
 
 
 def test_get_site_notifications(

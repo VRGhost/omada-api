@@ -1,5 +1,6 @@
 import json
 import pathlib
+import typing
 
 import pytest
 import yarl
@@ -66,3 +67,33 @@ def active_omada(requests_mock, inactive_omada):
     inactive_omada.login("testuser", "testpass")
     requests_mock.reset_mock()
     return inactive_omada
+
+
+@pytest.fixture
+def configure_paginated_get(requests_mock):
+    # A binding to configure paginated get (_geterator)
+    def _configure_fn_impl(
+        url: typing.Union[str, yarl.URL],
+        data: typing.Union[pathlib.Path, typing.Iterable[dict]],
+    ):
+        if isinstance(data, pathlib.Path):
+            with data.open() as fin:
+                pages = json.load(fin)
+        elif isinstance(data, (list, tuple)):
+            pages = data
+        else:
+            raise NotImplementedError(data)
+
+        def _get_page_cb(request, response) -> str:
+            try:
+                current_page = request.qs["currentpage"][0]
+            except (KeyError, IndexError):
+                current_page = "1"
+            current_page = int(current_page)
+            # current page index starts with one, not zero
+            return json.dumps(pages[current_page - 1])
+
+        binding = requests_mock.get(str(url), text=_get_page_cb)
+        return binding
+
+    return _configure_fn_impl

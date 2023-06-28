@@ -9,7 +9,7 @@ import requests
 import yarl
 from requests.cookies import RequestsCookieJar
 
-from . import api_bindings
+from . import api_bindings, function_interface_bindings
 
 logger = logging.getLogger(__name__)
 
@@ -64,16 +64,6 @@ class LevelFilter(enum.Enum):  # ruff: noqa: A003
     Error = 0
     Warning = 1
     Information = 2
-
-
-@enum.unique
-class ModuleFilter(enum.Enum):
-    """Alert and event modules"""
-
-    Operation = 0
-    System = 1
-    Device = 2
-    Client = 3
 
 
 @dataclasses.dataclass(frozen=True)
@@ -311,11 +301,24 @@ class Omada:
 
         return self._geterator(f"sites/{self._find_site(site)}/alerts", params=params)
 
-    def get_site_events(
-        self, site: typing.Optional[str] = None
-    ) -> typing.Iterable[dict]:
+    def get_site_events(self, **kwargs) -> typing.Iterable[dict]:
         """Returns the list of events for given site."""
-        return self._geterator(f"sites/{self._find_site(site)}/events")
+        settings = function_interface_bindings.SiteEventsInterface(**kwargs)
+        all_params = {
+            "filters.timeStart": settings.time_start,
+            "filters.timeEnd": settings.time_end,
+            "filters.module": settings.module,
+        }
+        # Remove empty filters
+        params = {}
+        for key, value in all_params.items():
+            if value is None:
+                continue
+            else:
+                params[key] = value
+        return self._geterator(
+            f"sites/{self._find_site(settings.site)}/events", params=params
+        )
 
     def get_site_notifications(
         self, site: typing.Optional[str] = None
