@@ -285,12 +285,15 @@ class Omada:
         return self._get(f"sites/{self._find_site(site)}/devices")
 
     def get_site_clients(
-        self, site: typing.Optional[str] = None, active: bool = True
+        self, site: typing.Optional[str] = None, active: typing.Optional[bool] = True
     ) -> typing.Iterable[dict]:
         """Returns the list of active clients for given site."""
+        params = {}
+        if active in (True, False):
+            params["filters.active"] = "true" if active else "false"
         return self._geterator(
             f"sites/{self._find_site(site)}/clients",
-            params={"filters.active": "true" if active else "false"},
+            params=params,
         )
 
     def get_site_alerts(

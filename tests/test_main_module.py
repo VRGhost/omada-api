@@ -306,16 +306,27 @@ def test_get_site_devices(requests_mock, default_api_v2, resources_dir, active_o
     assert len(rv) == 4
 
 
+@pytest.mark.parametrize(
+    "active, exp_filter_val", [(True, "true"), (False, "false"), (None, None)]
+)
 def test_get_site_clients(
-    configure_paginated_get, default_api_v2, resources_dir, active_omada
+    configure_paginated_get,
+    default_api_v2,
+    resources_dir,
+    active_omada,
+    active,
+    exp_filter_val,
 ):
-    configure_paginated_get(
+    matcher = configure_paginated_get(
         default_api_v2 / "sites" / "0bf476c155ea24942722c5a8b516adfe" / "clients",
         resources_dir / "get_site_clients.json",
     )
 
-    rv = list(active_omada.get_site_clients())
+    rv = list(active_omada.get_site_clients(active=active))
     assert len(rv) == 32
+
+    active_filter = matcher.last_request.qs.get("filters.active", [None])[0]
+    assert active_filter == exp_filter_val
 
 
 def test_get_site_alerts(
